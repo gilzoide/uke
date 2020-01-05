@@ -21,6 +21,7 @@
 		2B3F007723C26D6F008A520B /* uke-compiled.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2B3F006F23C26BF6008A520B /* uke-compiled.txt */; };
 		2B3F007823C26ED3008A520B /* Uke.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3F003B23C25AB4008A520B /* Uke.framework */; };
 		2B3F007923C26ED3008A520B /* Uke.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3F003B23C25AB4008A520B /* Uke.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2B3F007D23C27128008A520B /* rounded-corner.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2B3F007B23C27124008A520B /* rounded-corner.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,7 @@
 		2B3F006A23C265D4008A520B /* CALayer+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CALayer+Layout.swift"; sourceTree = "<group>"; };
 		2B3F006C23C26A73008A520B /* Reader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reader.swift; sourceTree = "<group>"; };
 		2B3F006F23C26BF6008A520B /* uke-compiled.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "uke-compiled.txt"; sourceTree = "<group>"; };
+		2B3F007B23C27124008A520B /* rounded-corner.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "rounded-corner.txt"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +139,7 @@
 		2B3F006E23C26BC8008A520B /* Examples */ = {
 			isa = PBXGroup;
 			children = (
+				2B3F007B23C27124008A520B /* rounded-corner.txt */,
 				2B3F006F23C26BF6008A520B /* uke-compiled.txt */,
 			);
 			path = Examples;
@@ -253,6 +256,7 @@
 				2B3F005923C25E13008A520B /* LaunchScreen.storyboard in Resources */,
 				2B3F007723C26D6F008A520B /* uke-compiled.txt in Resources */,
 				2B3F005623C25E13008A520B /* Assets.xcassets in Resources */,
+				2B3F007D23C27128008A520B /* rounded-corner.txt in Resources */,
 				2B3F005423C25E12008A520B /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
