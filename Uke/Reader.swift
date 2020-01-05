@@ -8,6 +8,10 @@
 
 import UIKit
 
+enum ReaderError: Error {
+    case invalidValue
+}
+
 class Reader {
     static let keyPathCharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: "."))
     static let newlineCharacterSet = CharacterSet.newlines
@@ -15,23 +19,29 @@ class Reader {
     static func read(_ contents: String, into view: UkeView) -> Bool {
         let scanner = Scanner(string: contents)
         
-        while !scanner.isAtEnd {
-            readLine(scanner, into: view)
+        do {
+            while !scanner.isAtEnd {
+                try readLine(scanner, into: view)
+            }
+            return true
         }
-        
-        return true
+        catch {
+            print("!!! Read error: \(error)")
+            return false
+        }
     }
     
-    static func readLine(_ scanner: Scanner, into view: UkeView) {
+    static func readLine(_ scanner: Scanner, into view: UkeView) throws {
         if let keyPath = scanner.scanCharacters(from: keyPathCharacterSet),
             let _ = scanner.scanString("="),
-            let valueString = scanner.scanUpToCharacters(from: newlineCharacterSet),
-            let value = readValue(valueString) {
+            let valueString = scanner.scanUpToCharacters(from: newlineCharacterSet) {
+            let value = try readValue(valueString)
             view.setValue(value, forKeyPath: keyPath)
         }
     }
     
-    static func readValue(_ valueString: String) -> Any? {
-        return Double(valueString)
+    static func readValue(_ valueString: String) throws -> Any {
+        guard let val = Double(valueString) else { throw ReaderError.invalidValue }
+        return val
     }
 }

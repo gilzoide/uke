@@ -1,1 +1,1 @@
-layer.cornerRadius = 20
+layer.cornerRadius = !s
