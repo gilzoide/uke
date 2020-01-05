@@ -1,0 +1,20 @@
+P color:UIColor
+P borderColor:UIColor
+
+C background:CALayer
+  borderWidth=1
+  borderColor=$borderColor
+  backgroundColor=$color
+  L height=$background.parent.minDimension
+  L width=$background.height
+  L center=$background.parent.boundsCenter
+  L cornerRadius=#0.5*%K,self.height
+/C
+
+C checkImage:CALayer
+  contents=Iarrow.counterclockwise.icloud
+  contentsGravity=SresizeAspect
+  L height=#0.5*%K,background.height
+  L width=$checkImage.height
+  L center=$checkImage.parent.boundsCenter
+/C
