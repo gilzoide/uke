@@ -58,6 +58,14 @@ pt_data _colorWithHexa(const char *str, size_t size, int argc, pt_data *argv, vo
     UIColor *color = [UIColor colorWithHexaString:hexaString];
     return (pt_data){ .p = (void *)CFBridgingRetain(color) };
 }
+pt_data _colorWithRGBA(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
+    double r = argv[0].d / 255.0;
+    double g = argc > 1 ? argv[1].d / 255.0 : 0;
+    double b = argc > 2 ? argv[2].d / 255.0 : 0;
+    double a = argc > 3 ? argv[3].d / 255.0 : 1;
+    UIColor *color = [UIColor colorWithRed:r green:g blue:b alpha:a];
+    return (pt_data){ .p = (void *)CFBridgingRetain(color) };
+}
 pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
     NSString *imageName = [[NSString alloc] initWithBytes:str length:size encoding:NSASCIIStringEncoding];
     imageName = [imageName stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
@@ -116,7 +124,8 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
                                  B('}')
                                  ) },
         { "Color", SEQ(B('C'), OR(SEQ_(_colorWithHexa, Hex, Hex, Hex, Hex, Hex, Hex),
-                                  V_(_colorWithIdentifier, "Identifier"))) },
+                                  V_(_colorWithIdentifier, "Identifier"),
+                                  V_(_colorWithRGBA, "NumberComposite"))) },
         { "Image", SEQ(B('I'), Q_(_image, BUT(B('\n')), 1)) },
         { NULL, NULL }
     };
