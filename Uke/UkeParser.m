@@ -29,6 +29,15 @@ pt_data _number(const char *str, size_t size, int argc, pt_data *argv, void *use
     NSNumber *number = [NSNumber numberWithDouble:strtod(str, NULL)];
     return (pt_data){ .p = (void *)CFBridgingRetain(number) };
 }
+pt_data _double(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
+    return (pt_data){ .d = strtod(str, NULL) };
+}
+pt_data _point(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
+    double x = argv[0].d;
+    double y = argv[0].d;
+    NSValue *point = [NSValue valueWithCGPoint:CGPointMake(x, y)];
+    return (pt_data){ .p = (void *)CFBridgingRetain(point) };
+}
 pt_data _colorWithIdentifier(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
     NSString *identifier = [[NSString alloc] initWithBytes:str length:size encoding:NSASCIIStringEncoding];
     UIColor *color = [UIColor colorWithSelectorName:identifier];
@@ -66,8 +75,9 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
  * Attr <- Keypath '=' Value
  * Keypath <- Identifier ('.' Identifier)*
  * Identifier <- \a+
- * Value <- Number / Color / Image  # TODO
+ * Value <- Number / Point / Color / Image  # TODO
  * Number <- \d+
+ * Point <- "P{" Number ',' Number '}'
  * Color <- 'C' ('#' \x\x\x\x\x\x / Identifier)
  * Image <- 'I' [^\n]+
  */
@@ -86,8 +96,9 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
                           Q(SEQ(B('.'), V("Identifier")), 0) // ('.' Identifier)*
                           ) },
         { "Identifier", Q(C(PT_ALPHA), 1) },
-        { "Value", OR(V("Number"), V("Color"), V("Image")) },
+        { "Value", OR(V("Number"), V("Point"), V("Color"), V("Image")) },
         { "Number", Q_(_number, C(PT_DIGIT), 1) },
+        { "Point", SEQ_(_point, L("P{"), V_(_double, "Number"), B(','), V_(_double, "Number"), B('}')) },
         { "Color", SEQ(B('C'), OR(SEQ_(_colorWithHexa, Hex, Hex, Hex, Hex, Hex, Hex),
                                   V_(_colorWithIdentifier, "Identifier"))) },
         { "Image", SEQ(B('I'), Q_(_image, BUT(B('\n')), 1)) },

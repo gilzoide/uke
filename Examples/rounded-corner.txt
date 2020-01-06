@@ -1,2 +1,5 @@
 layer.cornerRadius = 20
 backgroundColor = Ccafe42
+center = P{200,100}
+height = 100
+width = 100
