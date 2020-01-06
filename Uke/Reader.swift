@@ -8,40 +8,26 @@
 
 import UIKit
 
-enum ReaderError: Error {
+public enum ReaderError: Error {
+    case invalidCommand
+    case expectedColor
     case invalidValue
 }
 
 class Reader {
-    static let keyPathCharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: "."))
-    static let newlineCharacterSet = CharacterSet.newlines
+    static let parser = UkeParser()
     
     static func read(_ contents: String, into view: UkeView) -> Bool {
-        let scanner = Scanner(string: contents)
-        
-        do {
-            while !scanner.isAtEnd {
-                try readLine(scanner, into: view)
-            }
-            return true
+        let result = contents.withCString { (cString) -> Result<Bool, ReaderError> in
+            return parser.read(cString, into: view) > 0
+                ? Result.success(true)
+                : Result.failure(ReaderError.invalidCommand)
         }
-        catch {
-            print("!!! Read error: \(error)")
+        switch result {
+        case .success(_):
+            return true
+        case .failure(_):
             return false
         }
-    }
-    
-    static func readLine(_ scanner: Scanner, into view: UkeView) throws {
-        if let keyPath = scanner.scanCharacters(from: keyPathCharacterSet),
-            let _ = scanner.scanString("="),
-            let valueString = scanner.scanUpToCharacters(from: newlineCharacterSet) {
-            let value = try readValue(valueString)
-            view.setValue(value, forKeyPath: keyPath)
-        }
-    }
-    
-    static func readValue(_ valueString: String) throws -> Any {
-        guard let val = Double(valueString) else { throw ReaderError.invalidValue }
-        return val
     }
 }

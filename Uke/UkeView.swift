@@ -9,7 +9,7 @@
 import UIKit
 
 public class UkeView : UIView {
-    private var parameters: [String: Any.Type] = [:]
+    private var parameters: [String: Any] = [:]
     private var children: [String: Any] = [:]
     
     public override init(frame: CGRect) {

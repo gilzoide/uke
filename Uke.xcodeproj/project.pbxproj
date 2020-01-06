@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,6 +22,9 @@
 		2B3F007823C26ED3008A520B /* Uke.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3F003B23C25AB4008A520B /* Uke.framework */; };
 		2B3F007923C26ED3008A520B /* Uke.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3F003B23C25AB4008A520B /* Uke.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2B3F007D23C27128008A520B /* rounded-corner.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2B3F007B23C27124008A520B /* rounded-corner.txt */; };
+		2B3F008D23C29009008A520B /* pega-texto in Frameworks */ = {isa = PBXBuildFile; productRef = 2B3F008C23C29009008A520B /* pega-texto */; };
+		2B3F009023C29062008A520B /* UkeParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3F008E23C29062008A520B /* UkeParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B3F009123C29062008A520B /* UkeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3F008F23C29062008A520B /* UkeParser.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +49,16 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2B3F008723C28446008A520B /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -67,6 +80,8 @@
 		2B3F006C23C26A73008A520B /* Reader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reader.swift; sourceTree = "<group>"; };
 		2B3F006F23C26BF6008A520B /* uke-compiled.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "uke-compiled.txt"; sourceTree = "<group>"; };
 		2B3F007B23C27124008A520B /* rounded-corner.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "rounded-corner.txt"; sourceTree = "<group>"; };
+		2B3F008E23C29062008A520B /* UkeParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UkeParser.h; sourceTree = "<group>"; };
+		2B3F008F23C29062008A520B /* UkeParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UkeParser.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B3F008D23C29009008A520B /* pega-texto in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,6 +133,8 @@
 				2B3F006823C265C0008A520B /* UIView+Layout.swift */,
 				2B3F006A23C265D4008A520B /* CALayer+Layout.swift */,
 				2B3F006C23C26A73008A520B /* Reader.swift */,
+				2B3F008E23C29062008A520B /* UkeParser.h */,
+				2B3F008F23C29062008A520B /* UkeParser.m */,
 			);
 			path = Uke;
 			sourceTree = "<group>";
@@ -160,6 +178,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B3F004023C25AB4008A520B /* Uke.h in Headers */,
+				2B3F009023C29062008A520B /* UkeParser.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,12 +193,16 @@
 				2B3F003723C25AB4008A520B /* Sources */,
 				2B3F003823C25AB4008A520B /* Frameworks */,
 				2B3F003923C25AB4008A520B /* Resources */,
+				2B3F008723C28446008A520B /* Embed Libraries */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Uke;
+			packageProductDependencies = (
+				2B3F008C23C29009008A520B /* pega-texto */,
+			);
 			productName = Uke;
 			productReference = 2B3F003B23C25AB4008A520B /* Uke.framework */;
 			productType = "com.apple.product-type.framework";
@@ -231,6 +254,9 @@
 				Base,
 			);
 			mainGroup = 2B3F003123C25AB4008A520B;
+			packageReferences = (
+				2B3F008B23C29009008A520B /* XCRemoteSwiftPackageReference "pega-texto" */,
+			);
 			productRefGroup = 2B3F003C23C25AB4008A520B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -271,6 +297,7 @@
 				2B3F006B23C265D4008A520B /* CALayer+Layout.swift in Sources */,
 				2B3F006223C25EFF008A520B /* UkeView.swift in Sources */,
 				2B3F006D23C26A73008A520B /* Reader.swift in Sources */,
+				2B3F009123C29062008A520B /* UkeParser.m in Sources */,
 				2B3F006923C265C0008A520B /* UIView+Layout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -366,7 +393,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -423,7 +450,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -454,6 +481,10 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.gilzoide.Uke;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -482,6 +513,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.gilzoide.Uke;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -567,6 +602,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2B3F008B23C29009008A520B /* XCRemoteSwiftPackageReference "pega-texto" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gilzoide/pega-texto";
+			requirement = {
+				branch = vm;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2B3F008C23C29009008A520B /* pega-texto */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2B3F008B23C29009008A520B /* XCRemoteSwiftPackageReference "pega-texto" */;
+			productName = "pega-texto";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2B3F003223C25AB4008A520B /* Project object */;
 }
