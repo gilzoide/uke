@@ -32,11 +32,21 @@ pt_data _number(const char *str, size_t size, int argc, pt_data *argv, void *use
 pt_data _double(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
     return (pt_data){ .d = strtod(str, NULL) };
 }
-pt_data _numberPair(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
-    double x = argv[0].d;
-    double y = argv[1].d;
-    NSValue *point = [NSValue valueWithCGPoint:CGPointMake(x, y)];
-    return (pt_data){ .p = (void *)CFBridgingRetain(point) };
+pt_data _numberPairOrQuartet(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
+    if (argc != 2 && argc != 4) return PT_NULL_DATA;
+    CGFloat doubles[4] = { argv[0].d, argv[1].d };
+    const char *objCType;
+    if (argc == 4) {
+        doubles[2] = argv[2].d;
+        doubles[3] = argv[3].d;
+        objCType = @encode(CGRect);
+    }
+    else {
+        objCType = @encode(CGPoint);
+    }
+    
+    NSValue *value = [NSValue valueWithBytes:doubles objCType:objCType];
+    return (pt_data){ .p = (void *)CFBridgingRetain(value) };
 }
 pt_data _colorWithIdentifier(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
     NSString *identifier = [[NSString alloc] initWithBytes:str length:size encoding:NSASCIIStringEncoding];
@@ -75,9 +85,10 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
  * Attr <- Keypath '=' Value
  * Keypath <- Identifier ('.' Identifier)*
  * Identifier <- \a+
- * Value <- Number / NumberPair / Color / Image  # TODO
+ * Value <- Number / NumberPairOrQuartet / Color / Image  # TODO
  * Number <- \d+
- * NumberPair <- '{' Number ',' Number '}'
+ * NumberPairOrQuartet <- NumberComposite
+ * NumberComposite <- '{' Number (',' Number){-3} '}'
  * Color <- 'C' ('#' \x\x\x\x\x\x / Identifier)
  * Image <- 'I' [^\n]+
  */
@@ -96,9 +107,14 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
                           Q(SEQ(B('.'), V("Identifier")), 0) // ('.' Identifier)*
                           ) },
         { "Identifier", Q(C(PT_ALPHA), 1) },
-        { "Value", OR(V("Number"), V("NumberPair"), V("Color"), V("Image")) },
+        { "Value", OR(V("Number"), V("NumberPairOrQuartet"), V("Color"), V("Image")) },
         { "Number", Q_(_number, C(PT_DIGIT), 1) },
-        { "NumberPair", SEQ_(_numberPair, B('{'), V_(_double, "Number"), B(','), V_(_double, "Number"), B('}')) },
+        { "NumberPairOrQuartet", V_(_numberPairOrQuartet, "NumberComposite") },
+        { "NumberComposite", SEQ(B('{'),
+                                        V_(_double, "Number"),
+                                        Q(SEQ(B(','), V_(_double, "Number")), -3), // (',' Number){-3}
+                                 B('}')
+                                 ) },
         { "Color", SEQ(B('C'), OR(SEQ_(_colorWithHexa, Hex, Hex, Hex, Hex, Hex, Hex),
                                   V_(_colorWithIdentifier, "Identifier"))) },
         { "Image", SEQ(B('I'), Q_(_image, BUT(B('\n')), 1)) },
