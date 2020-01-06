@@ -16,7 +16,6 @@ class ViewController: UIViewController {
         
         if let url = Bundle.main.url(forResource: "rounded-corner", withExtension: "txt"), let v = UkeView(url: url) {
             v.frame = CGRect(x: 100, y: 100, width: 100, height: 100)
-            v.backgroundColor = UIColor.red
             view.addSubview(v)
         }
     }

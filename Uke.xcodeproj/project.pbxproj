@@ -25,6 +25,7 @@
 		2B3F008D23C29009008A520B /* pega-texto in Frameworks */ = {isa = PBXBuildFile; productRef = 2B3F008C23C29009008A520B /* pega-texto */; };
 		2B3F009023C29062008A520B /* UkeParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3F008E23C29062008A520B /* UkeParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B3F009123C29062008A520B /* UkeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3F008F23C29062008A520B /* UkeParser.m */; };
+		2B8E875D23C33BC300DD4F3B /* UIColor+Literal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B8E875C23C33BC300DD4F3B /* UIColor+Literal.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 		2B3F007B23C27124008A520B /* rounded-corner.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "rounded-corner.txt"; sourceTree = "<group>"; };
 		2B3F008E23C29062008A520B /* UkeParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UkeParser.h; sourceTree = "<group>"; };
 		2B3F008F23C29062008A520B /* UkeParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UkeParser.m; sourceTree = "<group>"; };
+		2B8E875C23C33BC300DD4F3B /* UIColor+Literal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Literal.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +137,7 @@
 				2B3F006C23C26A73008A520B /* Reader.swift */,
 				2B3F008E23C29062008A520B /* UkeParser.h */,
 				2B3F008F23C29062008A520B /* UkeParser.m */,
+				2B8E875C23C33BC300DD4F3B /* UIColor+Literal.swift */,
 			);
 			path = Uke;
 			sourceTree = "<group>";
@@ -299,6 +302,7 @@
 				2B3F006D23C26A73008A520B /* Reader.swift in Sources */,
 				2B3F009123C29062008A520B /* UkeParser.m in Sources */,
 				2B3F006923C265C0008A520B /* UIView+Layout.swift in Sources */,
+				2B8E875D23C33BC300DD4F3B /* UIColor+Literal.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
