@@ -13,6 +13,10 @@
 
 #import <Uke/Uke-Swift.h>
 
+static inline double _floatOr255BasedInt(double x) {
+    return x <= 1 ? x : x / 255.0;
+}
+
 pt_data _keyPath(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
     NSString *keyPath = [[NSString alloc] initWithBytes:str length:size encoding:NSASCIIStringEncoding];
     return (pt_data){ .p = (void *)CFBridgingRetain(keyPath) };
@@ -59,10 +63,10 @@ pt_data _colorWithHexa(const char *str, size_t size, int argc, pt_data *argv, vo
     return (pt_data){ .p = (void *)CFBridgingRetain(color) };
 }
 pt_data _colorWithRGBA(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
-    double r = argv[0].d / 255.0;
-    double g = argc > 1 ? argv[1].d / 255.0 : 0;
-    double b = argc > 2 ? argv[2].d / 255.0 : 0;
-    double a = argc > 3 ? argv[3].d / 255.0 : 1;
+    double r = _floatOr255BasedInt(argv[0].d);
+    double g = argc > 1 ? _floatOr255BasedInt(argv[1].d) : 0;
+    double b = argc > 2 ? _floatOr255BasedInt(argv[2].d) : 0;
+    double a = argc > 3 ? _floatOr255BasedInt(argv[3].d) : 1;
     UIColor *color = [UIColor colorWithRed:r green:g blue:b alpha:a];
     return (pt_data){ .p = (void *)CFBridgingRetain(color) };
 }
@@ -94,7 +98,7 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
  * Keypath <- Identifier ('.' Identifier)*
  * Identifier <- \a+
  * Value <- Number / NumberPairOrQuartet / Color / Image  # TODO
- * Number <- \d+
+ * Number <- \d+ ('.' \d+)?
  * NumberPairOrQuartet <- NumberComposite
  * NumberComposite <- '{' Number (',' Number){-3} '}'
  * Color <- 'C' ('#' \x\x\x\x\x\x / Identifier)
@@ -103,6 +107,7 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
 + (void)initGrammar:(pt_grammar *)grammar {
 #define Sp Q(C(PT_SPACE), 0)
 #define Hex C(PT_XDIGIT)
+#define Digits Q(C(PT_DIGIT), 1)
     pt_rule R[] = {
         { "Axiom", SEQ(Sp, // \s*
                        Q(SEQ(V("Expr"), Sp), 1), // (Expression \s*)+
@@ -116,7 +121,9 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
                           ) },
         { "Identifier", Q(C(PT_ALPHA), 1) },
         { "Value", OR(V("Number"), V("NumberPairOrQuartet"), V("Color"), V("Image")) },
-        { "Number", Q_(_number, C(PT_DIGIT), 1) },
+        { "Number", SEQ_(_number, Digits, // \d+
+                                  Q(SEQ(B('.'), Digits), -1) // ('.' \d+)?
+                         ) },
         { "NumberPairOrQuartet", V_(_numberPairOrQuartet, "NumberComposite") },
         { "NumberComposite", SEQ(B('{'),
                                         V_(_double, "Number"),

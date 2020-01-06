@@ -1,4 +1,4 @@
 layer.cornerRadius = 20
-backgroundColor = C{255,255,255}
+backgroundColor = C{255,255,255,0.5}
 frame = {0,0,200,200}
 center = {200,300}
