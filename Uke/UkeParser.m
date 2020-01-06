@@ -34,7 +34,7 @@ pt_data _double(const char *str, size_t size, int argc, pt_data *argv, void *use
 }
 pt_data _numberPair(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
     double x = argv[0].d;
-    double y = argv[0].d;
+    double y = argv[1].d;
     NSValue *point = [NSValue valueWithCGPoint:CGPointMake(x, y)];
     return (pt_data){ .p = (void *)CFBridgingRetain(point) };
 }
