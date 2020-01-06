@@ -39,6 +39,15 @@ pt_data _colorWithHexa(const char *str, size_t size, int argc, pt_data *argv, vo
     UIColor *color = [UIColor colorWithHexaString:hexaString];
     return (pt_data){ .p = (void *)CFBridgingRetain(color) };
 }
+pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
+    NSString *imageName = [[NSString alloc] initWithBytes:str length:size encoding:NSASCIIStringEncoding];
+    imageName = [imageName stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+    UIImage *image = [UIImage imageNamed:imageName];
+    if (@available(iOS 13, macCatalyst 13, *)) {
+        if (!image) image = [UIImage systemImageNamed:imageName];
+    }
+    return (pt_data){ .p = (void *)CFBridgingRetain(image) };
+}
 
 @implementation UkeParser {
     pt_grammar _grammar;
@@ -57,9 +66,10 @@ pt_data _colorWithHexa(const char *str, size_t size, int argc, pt_data *argv, vo
  * Attr <- Keypath '=' Value
  * Keypath <- Identifier ('.' Identifier)*
  * Identifier <- \a+
- * Value <- Number / Color  # TODO
+ * Value <- Number / Color / Image  # TODO
  * Number <- \d+
  * Color <- 'C' ('#' \x\x\x\x\x\x / Identifier)
+ * Image <- 'I' [^\n]+
  */
 + (void)initGrammar:(pt_grammar *)grammar {
 #define Sp Q(C(PT_SPACE), 0)
@@ -76,10 +86,11 @@ pt_data _colorWithHexa(const char *str, size_t size, int argc, pt_data *argv, vo
                           Q(SEQ(B('.'), V("Identifier")), 0) // ('.' Identifier)*
                           ) },
         { "Identifier", Q(C(PT_ALPHA), 1) },
-        { "Value", OR(V("Number"), V("Color")) },
+        { "Value", OR(V("Number"), V("Color"), V("Image")) },
         { "Number", Q_(_number, C(PT_DIGIT), 1) },
         { "Color", SEQ(B('C'), OR(SEQ_(_colorWithHexa, Hex, Hex, Hex, Hex, Hex, Hex),
                                   V_(_colorWithIdentifier, "Identifier"))) },
+        { "Image", SEQ(B('I'), Q_(_image, BUT(B('\n')), 1)) },
         { NULL, NULL }
     };
 #undef Sp
