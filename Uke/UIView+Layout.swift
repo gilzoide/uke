@@ -18,6 +18,11 @@ public extension UIView {
         set { bounds = CGRect(x: 0, y: 0, width: bounds.width, height: newValue) }
     }
     
+    @objc var size: CGSize {
+        get { return bounds.size }
+        set { bounds = CGRect(x: 0, y: 0, width: newValue.width, height: newValue.height) }
+    }
+    
     @objc var minDimension: CGFloat {
         return min(width, height)
     }

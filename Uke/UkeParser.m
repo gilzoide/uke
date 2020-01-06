@@ -32,7 +32,7 @@ pt_data _number(const char *str, size_t size, int argc, pt_data *argv, void *use
 pt_data _double(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
     return (pt_data){ .d = strtod(str, NULL) };
 }
-pt_data _point(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
+pt_data _numberPair(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
     double x = argv[0].d;
     double y = argv[0].d;
     NSValue *point = [NSValue valueWithCGPoint:CGPointMake(x, y)];
@@ -75,9 +75,9 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
  * Attr <- Keypath '=' Value
  * Keypath <- Identifier ('.' Identifier)*
  * Identifier <- \a+
- * Value <- Number / Point / Color / Image  # TODO
+ * Value <- Number / NumberPair / Color / Image  # TODO
  * Number <- \d+
- * Point <- "P{" Number ',' Number '}'
+ * NumberPair <- '{' Number ',' Number '}'
  * Color <- 'C' ('#' \x\x\x\x\x\x / Identifier)
  * Image <- 'I' [^\n]+
  */
@@ -96,9 +96,9 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
                           Q(SEQ(B('.'), V("Identifier")), 0) // ('.' Identifier)*
                           ) },
         { "Identifier", Q(C(PT_ALPHA), 1) },
-        { "Value", OR(V("Number"), V("Point"), V("Color"), V("Image")) },
+        { "Value", OR(V("Number"), V("NumberPair"), V("Color"), V("Image")) },
         { "Number", Q_(_number, C(PT_DIGIT), 1) },
-        { "Point", SEQ_(_point, L("P{"), V_(_double, "Number"), B(','), V_(_double, "Number"), B('}')) },
+        { "NumberPair", SEQ_(_numberPair, B('{'), V_(_double, "Number"), B(','), V_(_double, "Number"), B('}')) },
         { "Color", SEQ(B('C'), OR(SEQ_(_colorWithHexa, Hex, Hex, Hex, Hex, Hex, Hex),
                                   V_(_colorWithIdentifier, "Identifier"))) },
         { "Image", SEQ(B('I'), Q_(_image, BUT(B('\n')), 1)) },
