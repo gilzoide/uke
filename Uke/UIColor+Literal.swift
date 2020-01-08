@@ -17,13 +17,14 @@ public extension UIColor {
     
     @objc static func color(hexaString: String) -> UIColor? {
         let scanner = Scanner(string: hexaString)
-        if let int = scanner.scanInt(representation: .hexadecimal) {
-            return color(hexa: int)
+        var value: UInt32 = 0
+        if scanner.scanHexInt32(&value) {
+            return color(hexa: value)
         }
         return nil
     }
     
-    @objc static func color(hexa: Int) -> UIColor {
+    @objc static func color(hexa: UInt32) -> UIColor {
         let r = CGFloat((hexa & 0xff0000) >> 16) / 255.0
         let g = CGFloat((hexa & 0x00ff00) >>  8) / 255.0
         let b = CGFloat((hexa & 0x0000ff) >>  0) / 255.0
