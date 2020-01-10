@@ -14,7 +14,7 @@ import UIKit
     private var keyPathExpression: [String: NSExpression] = [:]
     
     @objc public func addObjectRecipe(_ recipe: UkeObjectRecipe, identifiedBy identifier: String? = nil) {
-        let key = identifier ?? String(objectsRecipes.count)
+        let key = identifier ?? String(format: "_%d", objectsRecipes.count)
         objectsRecipes[key] = recipe
     }
     
