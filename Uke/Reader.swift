@@ -14,20 +14,19 @@ public enum ReaderError: Error {
     case invalidValue
 }
 
-class Reader {
+public class Reader {
     static let parser = UkeParser()
     
-    static func read(_ contents: String, into view: UkeView) -> Bool {
-        let result = contents.withCString { (cString) -> Result<Bool, ReaderError> in
-            return parser.read(cString, into: view) > 0
-                ? Result.success(true)
-                : Result.failure(ReaderError.invalidCommand)
+    public static func read(_ contents: String) -> UkeObjectRecipe? {
+        let result = contents.withCString { (cString) -> Result<UkeObjectRecipe, ReaderError> in
+            guard let recipe = parser.recipe(withContents: cString) else { return Result.failure(ReaderError.invalidCommand) }
+            return Result.success(recipe)
         }
         switch result {
-        case .success(_):
-            return true
+        case .success(let recipe):
+            return recipe
         case .failure(_):
-            return false
+            return nil
         }
     }
 }

@@ -19,10 +19,4 @@ public class UkeView : UIView {
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-    
-    public init?(url: URL) {
-        guard let contents = try? String(contentsOf: url) else { return nil }
-        self.init()
-        guard Reader.read(contents, into: self) else { return nil }
-    }
 }

@@ -8,13 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-@class UkeView;
+@class UkeView, UkeObjectRecipe;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UkeParser : NSObject
 
-- (int)read:(const char *)contents into:(UkeView *)view;
+- (nullable UkeObjectRecipe *)recipeWithContents:(const char *)contents;
 
 @end
 

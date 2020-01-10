@@ -7,6 +7,7 @@
 //
 
 #import "UkeParser.h"
+#import "UkeObjectRecipe.h"
 
 #import "pega-texto.h"
 #import "pega-texto/macro-on.h"
@@ -23,10 +24,10 @@ pt_data _keyPath(const char *str, size_t size, int argc, pt_data *argv, void *us
 }
 pt_data _attribute(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
     assert(argc == 2 && "Must have both keyPath and value for setting");
-    UkeView *view = (__bridge UkeView *)userdata;
+    UkeObjectRecipe *recipe = (__bridge UkeObjectRecipe *)userdata;
     NSString *keyPath = CFBridgingRelease(argv[0].p);
     id value = CFBridgingRelease(argv[1].p);
-    [view setValue:value forKeyPath:keyPath];
+    [recipe addConstant:value forKeyPath:keyPath];
     return PT_NULL_DATA;
 }
 pt_data _number(const char *str, size_t size, int argc, pt_data *argv, void *userdata) {
@@ -97,12 +98,13 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
  * Attr <- Keypath '=' Value
  * Keypath <- Identifier ('.' Identifier)*
  * Identifier <- \a+
- * Value <- Number / NumberPairOrQuartet / Color / Image  # TODO
+ * Value <- Number / NumberPairOrQuartet / Color / Image / Array  # TODO
  * Number <- \d+ ('.' \d+)?
  * NumberPairOrQuartet <- NumberComposite
  * NumberComposite <- '{' Number (',' Number){-3} '}'
  * Color <- 'C' ('#' \x\x\x\x\x\x / Identifier)
  * Image <- 'I' [^\n]+
+ * Array <- '[' Value (',' Value) ','? ']'
  */
 + (void)initGrammar:(pt_grammar *)grammar {
 #define Sp Q(C(PT_SPACE), 0)
@@ -142,10 +144,11 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
     pt_validate_grammar(grammar, PT_VALIDATE_ABORT);
 }
 
-- (int)read:(const char *)contents into:(UkeView *)view {
-    pt_match_options opts = { .userdata = (__bridge void *)view };
+- (nullable UkeObjectRecipe *)recipeWithContents:(const char *)contents {
+    UkeObjectRecipe *recipe = [[UkeObjectRecipe alloc] initWithBaseClass:UkeView.class];
+    pt_match_options opts = { .userdata = (__bridge void *)recipe };
     pt_match_result result = pt_match_grammar(&_grammar, contents, &opts);
-    return result.matched;
+    return result.matched > 0 ? recipe : nil;
 }
 
 @end

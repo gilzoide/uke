@@ -14,7 +14,10 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let url = Bundle.main.url(forResource: "rounded-corner", withExtension: "txt"), let v = UkeView(url: url) {
+        if let url = Bundle.main.url(forResource: "rounded-corner", withExtension: "txt"),
+            let contents = try? String(contentsOf: url),
+            let recipe = Reader.read(contents),
+            let v = recipe.instantiate() as? UkeView {
             view.addSubview(v)
         }
     }
