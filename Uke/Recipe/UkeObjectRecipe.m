@@ -8,12 +8,6 @@
 
 #import "UkeObjectRecipe.h"
 
-@interface UkeObjectRecipe ()
-
-@property (nonatomic, strong, readwrite) Class baseClass;
-
-@end
-
 @implementation UkeObjectRecipe {
     NSMutableDictionary *_constants;
 }
@@ -24,7 +18,8 @@
 }
 
 - (instancetype)initWithBaseClass:(Class)baseClass {
-    if (self = [self init]) {
+    if (self = [super init]) {
+        _constants = [[NSMutableDictionary alloc] init];
         self.baseClass = baseClass;
     }
     return self;

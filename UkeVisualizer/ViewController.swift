@@ -14,12 +14,19 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let url = Bundle.main.url(forResource: "rounded-corner", withExtension: "txt"),
-            let contents = try? String(contentsOf: url),
-            let recipe = Reader.read(contents),
-            let v = recipe.instantiate() as? UkeView {
-            view.addSubview(v)
-        }
+        let recipe = UkeRecipe()
+        recipe.addConstant(UIColor.label, forKeyPath: "backgroundColor")
+        recipe.addConstant(10, forKeyPath: "layer.cornerRadius")
+        recipe.addForwarding(from: "center", to: "size")
+        
+        
+        let v = recipe.instantiate()
+        v.center = CGPoint(x: 200, y: 200)
+        view.addSubview(v)
+        
+        let v2 = recipe.instantiate()
+        v2.center = CGPoint(x: 50, y: 70)
+        view.addSubview(v2)
     }
 
 

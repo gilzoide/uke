@@ -105,6 +105,8 @@ pt_data _image(const char *str, size_t size, int argc, pt_data *argv, void *user
  * Color <- 'C' ('#' \x\x\x\x\x\x / Identifier)
  * Image <- 'I' [^\n]+
  * Array <- '[' Value (',' Value) ','? ']'
+ *
+ * Sp <- \s*
  */
 + (void)initGrammar:(pt_grammar *)grammar {
 #define Sp Q(C(PT_SPACE), 0)

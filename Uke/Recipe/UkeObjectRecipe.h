@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UkeObjectRecipe : NSObject
 
-@property (nonatomic, strong, readonly) Class baseClass;
+@property (nonatomic, strong) Class baseClass;
 
 - (nullable instancetype)initWithBaseClassName:(NSString *)baseClassName;
 - (instancetype)initWithBaseClass:(Class)baseClass;
