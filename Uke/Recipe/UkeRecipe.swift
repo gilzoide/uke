@@ -11,18 +11,18 @@ import UIKit
 @objc public class UkeRecipe : UkeObjectRecipe {
     private var parameters: [String: Any.Type] = [:]
     private var objectsRecipes: [String: UkeObjectRecipe] = [:]
-    private var forwardDependencies: [String: [String]] = [:]
+    private var dependencies: [String: [(String, NSExpression?)]] = [:]
     
     @objc public func addObjectRecipe(_ recipe: UkeObjectRecipe, identifiedBy identifier: String? = nil) {
         let key = identifier ?? String(format: "_%d", objectsRecipes.count)
         objectsRecipes[key] = recipe
     }
     
-    public func addForwarding(from keyPath: String, to forwardKeyPath: String) {
-        if forwardDependencies[keyPath] == nil {
-           forwardDependencies[keyPath] = []
+    public func addDependency(from keyPath: String, to forwardKeyPath: String, usingExpression expression: NSExpression? = nil) {
+        if dependencies[keyPath] == nil {
+           dependencies[keyPath] = []
         }
-        forwardDependencies[keyPath]?.append(forwardKeyPath)
+        dependencies[keyPath]?.append((forwardKeyPath, expression))
     }
     
     override public init() {
@@ -31,7 +31,7 @@ import UIKit
     
     override public func instantiate() -> UkeView {
         let view = super.instantiate() as! UkeView
-        for keyPath in forwardDependencies.keys {
+        for keyPath in dependencies.keys {
             view.addObserver(self, forKeyPath: keyPath, options: .new, context: nil)
         }
         return view
@@ -39,9 +39,13 @@ import UIKit
     
     override public func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if let keyPath = keyPath, let object = object as? NSObject, let newValue = change?[.newKey] {
-            if let forwardList = forwardDependencies[keyPath] {
-                for forwardKeyPath in forwardList {
-                    object.setValue(newValue, forKeyPath: forwardKeyPath)
+            if let dependencyList = dependencies[keyPath] {
+                for (dependencyKeyPath, expression) in dependencyList {
+                    var value: Any? = newValue
+                    if let expression = expression {
+                        value = expression.expressionValue(with: object, context: nil)
+                    }
+                    object.setValue(value, forKeyPath: dependencyKeyPath)
                 }
             }
         }

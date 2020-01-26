@@ -29,4 +29,10 @@ public extension UIView {
     @objc var maxDimension: CGFloat {
         return max(width, height)
     }
+    @objc class func keyPathsForValuesAffectingMinDimension() -> Set<String> {
+        return Set(["width", "height"])
+    }
+    @objc class func keyPathsForValuesAffectingMaxDimension() -> Set<String> {
+        return Set(["width", "height"])
+    }
 }
