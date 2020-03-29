@@ -26,11 +26,10 @@ class ViewController: UIViewController {
             .setValue(500, keyPath: "height"),
             
             .pushView(name: "inner"),
-            .setValue(CGPoint.zero, keyPath: "anchorPoint"),
             .bindExpression(name: "center", format: "%K", dependencyKeyPaths: ["boundsCenter"], runOnLayout: true),
-            .bindExpression(name: "width", format: "%K * 0.9", dependencyKeyPaths: ["width"], runOnLayout: true),
+            .bindExpression(name: "width", format: "%K - 16", dependencyKeyPaths: ["width"], runOnLayout: true),
             .bindExpression(name: "height", format: "%K - 16", dependencyKeyPaths: ["height"], runOnLayout: true),
-            .bindExpression(name: "layer.cornerRadius", format: "%K * 0.5", dependencyKeyPaths: ["inner.minDimension"], runOnLayout: true),
+            .bindExpression(name: "layer.cornerRadius", format: "floor(%K * 0.5)", dependencyKeyPaths: ["inner.minDimension"], runOnLayout: true),
             .setValue(UIColor.black, keyPath: "backgroundColor"),
             .addChild,
         ])
@@ -40,7 +39,7 @@ class ViewController: UIViewController {
     }
     
     @objc func onTap(_ sender: Any?) {
-        if ukeView.height > 1000 {
+        if ukeView.height > 800 {
            ukeView.height = 100
         }
         else {

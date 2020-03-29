@@ -31,6 +31,7 @@ public class UkeView : UIView {
     private var dependencies: [String: [String]] = [:]
     private var bindings: [String: NSExpression] = [:]
     private var layoutBindings: [String: NSExpression] = [:]
+    private var layoutBindingsOrdered: [String] = []
     private var children: [String: Any] = [:]
     private var layingOut: Bool = false
     
@@ -68,6 +69,7 @@ public class UkeView : UIView {
                     }
                     if runOnLayout {
                         layoutBindings[fullName] = expression
+                        layoutBindingsOrdered.append(fullName)
                     }
                     else {
                         bindings[fullName] = expression
@@ -141,7 +143,8 @@ public class UkeView : UIView {
     public override func layoutSubviews() {
         super.layoutSubviews()
         layingOut = true
-        for (keyPath, expression) in layoutBindings {
+        for keyPath in layoutBindingsOrdered {
+            let expression = layoutBindings[keyPath]!
             let value = expression.expressionValue(with: self, context: nil)
             setValue(value, forKeyPath: keyPath)
         }
