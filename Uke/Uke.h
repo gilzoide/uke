@@ -15,5 +15,4 @@ FOUNDATION_EXPORT double UkeVersionNumber;
 FOUNDATION_EXPORT const unsigned char UkeVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <Uke/PublicHeader.h>
-#import "UkeParser.h"
 #import "UkeObjectRecipe.h"

@@ -7,15 +7,18 @@
 //
 
 import UIKit
-import UkeLua
+import Uke
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let engine = UkeEngine()
-        let _ = engine.templateNamed("rounded-corner")
+        let view = try! UkeView(fromRecipe: [
+            .defineProperty(name: "color", type: UIColor.self),
+            .setValue(0.5, keyPath: "layer.opacity")
+        ])
+        self.view.addSubview(view)
     }
 
 
