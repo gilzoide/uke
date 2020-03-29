@@ -11,6 +11,8 @@ import UIKit
 public enum UkeViewError: Error {
     case propertyAlreadyExists(String)
     case bindingAlreadyExists(String)
+    case invalidChildType(AnyClass)
+    case invalidAddChild
 }
 
 public class UkeView : UIView {
@@ -30,6 +32,7 @@ public class UkeView : UIView {
     private var bindings: [String: NSExpression] = [:]
     private var layoutBindings: [String: NSExpression] = [:]
     private var children: [String: Any] = [:]
+    private var layingOut: Bool = false
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -42,7 +45,8 @@ public class UkeView : UIView {
     public convenience init(fromRecipe instructions: [RecipeInstruction]) throws {
         self.init(frame: CGRect.zero)
         
-        let objectStack = [self]
+        var objectStack: [NSObject] = [self]
+        var keypathStack: [String] = []
         for instruction in instructions {
             switch instruction {
             case .defineProperty(let name, let type, let initialValue):
@@ -50,29 +54,52 @@ public class UkeView : UIView {
             case .setValue(let value, let keyPath):
                 objectStack.last!.setValue(value, forKeyPath: keyPath)
             case .bindExpression(let name, let format, let dependencyKeyPaths, let runOnLayout):
-                if bindings[name] != nil || layoutBindings[name] != nil {
-                    throw UkeViewError.bindingAlreadyExists(name)
+                let childName = keypathStack.last?.appending(".") ?? ""
+                let fullName = "\(childName)\(name)"
+                if bindings[fullName] != nil || layoutBindings[fullName] != nil {
+                    throw UkeViewError.bindingAlreadyExists(fullName)
                 }
                 let expression = NSExpression(format: format, argumentArray: dependencyKeyPaths)
                 if !dependencyKeyPaths.isEmpty {
                     for keyPath in dependencyKeyPaths {
                         var deps = dependencies[keyPath, default: []]
-                        deps.append(name)
+                        deps.append(fullName)
                         dependencies.updateValue(deps, forKey: keyPath)
                     }
                     if runOnLayout {
-                        layoutBindings[name] = expression
+                        layoutBindings[fullName] = expression
                     }
                     else {
-                        bindings[name] = expression
+                        bindings[fullName] = expression
                     }
                 }
                 else {
                     let value = expression.expressionValue(with: self, context: nil)
-                    setValue(value, forKey: name)
+                    setValue(value, forKeyPath: fullName)
                 }
-            default:
-                break
+            case .pushView(let name, let viewType):
+                let view = viewType.init(frame: CGRect.zero)
+                objectStack.append(view)
+                keypathStack.append(name)
+                children[name] = view
+            case .pushLayer(let name, let layerType):
+                let layer = layerType.init()
+                objectStack.append(layer)
+                keypathStack.append(name)
+                children[name] = layer
+            case .addChild:
+                let child = objectStack.popLast()!
+                let _ = keypathStack.popLast()
+                switch child {
+                case self:
+                    throw UkeViewError.invalidAddChild
+                case let subview as UIView:
+                    addSubview(subview)
+                case let sublayer as CALayer:
+                    layer.addSublayer(sublayer)
+                default:
+                    throw UkeViewError.invalidChildType(type(of: child))
+                }
             }
         }
     }
@@ -95,12 +122,11 @@ public class UkeView : UIView {
     }
     
     public override func value(forUndefinedKey key: String) -> Any? {
-        if let property = properties[key] { return property.value }
-        else { return super.value(forUndefinedKey: key) }
+        return properties[key]?.value ?? children[key] ?? super.value(forUndefinedKey: key)
     }
     
     func resolveDependencies(forKeyPath keyPath: String) {
-        guard let deps = dependencies[keyPath] else { return }
+        guard !layingOut, let deps = dependencies[keyPath] else { return }
         for d in deps {
             if let binding = bindings[d] {
                 let value = binding.expressionValue(with: self, context: nil)
@@ -114,9 +140,11 @@ public class UkeView : UIView {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
+        layingOut = true
         for (keyPath, expression) in layoutBindings {
             let value = expression.expressionValue(with: self, context: nil)
             setValue(value, forKeyPath: keyPath)
         }
+        layingOut = false
     }
 }

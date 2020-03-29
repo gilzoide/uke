@@ -18,10 +18,21 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         ukeView = try! UkeView(fromRecipe: [
+            .setValue(CGPoint.zero, keyPath: "anchorPoint"),
             .defineProperty(name: "color", type: UIColor.self),
-            .setValue(UIColor.label, keyPath: "backgroundColor"),
+            .bindExpression(name: "backgroundColor", format: "%K", dependencyKeyPaths: ["color"]),
+            .setValue(UIColor.label, keyPath: "color"),
             .bindExpression(name: "width", format: "%K", dependencyKeyPaths: ["height"], runOnLayout: true),
             .setValue(500, keyPath: "height"),
+            
+            .pushView(name: "inner"),
+            .setValue(CGPoint.zero, keyPath: "anchorPoint"),
+            .bindExpression(name: "center", format: "%K", dependencyKeyPaths: ["boundsCenter"], runOnLayout: true),
+            .bindExpression(name: "width", format: "%K * 0.9", dependencyKeyPaths: ["width"], runOnLayout: true),
+            .bindExpression(name: "height", format: "%K - 16", dependencyKeyPaths: ["height"], runOnLayout: true),
+            .bindExpression(name: "layer.cornerRadius", format: "%K * 0.5", dependencyKeyPaths: ["inner.minDimension"], runOnLayout: true),
+            .setValue(UIColor.black, keyPath: "backgroundColor"),
+            .addChild,
         ])
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
         ukeView.addGestureRecognizer(tapGesture)
