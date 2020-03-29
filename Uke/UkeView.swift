@@ -15,11 +15,14 @@ public enum UkeViewError: Error {
     case invalidAddChild
 }
 
+let TRIGGER_LAYOUT_KEYPATHS: Set = ["frame", "bounds", "size", "height", "width"]
+
 public class UkeView : UIView {
     class Property {
         var name: String
         var type: Any.Type
         var value: Any?
+        
         init(name: String, type: Any.Type, value: Any? = nil) {
             self.name = name
             self.type = type
@@ -63,6 +66,9 @@ public class UkeView : UIView {
                 let expression = NSExpression(format: format, argumentArray: dependencyKeyPaths)
                 if !dependencyKeyPaths.isEmpty {
                     for keyPath in dependencyKeyPaths {
+                        if runOnLayout && TRIGGER_LAYOUT_KEYPATHS.contains(keyPath) {
+                            continue
+                        }
                         var deps = dependencies[keyPath, default: []]
                         deps.append(fullName)
                         dependencies.updateValue(deps, forKey: keyPath)
@@ -75,10 +81,8 @@ public class UkeView : UIView {
                         bindings[fullName] = expression
                     }
                 }
-                else {
-                    let value = expression.expressionValue(with: self, context: nil)
-                    setValue(value, forKeyPath: fullName)
-                }
+                let value = expression.expressionValue(with: self, context: nil)
+                setValue(value, forKeyPath: fullName)
             case .pushView(let name, let viewType):
                 let view = viewType.init(frame: CGRect.zero)
                 objectStack.append(view)
@@ -128,14 +132,19 @@ public class UkeView : UIView {
     }
     
     func resolveDependencies(forKeyPath keyPath: String) {
-        guard !layingOut, let deps = dependencies[keyPath] else { return }
-        for d in deps {
-            if let binding = bindings[d] {
-                let value = binding.expressionValue(with: self, context: nil)
-                setValue(value, forKey: d)
-            }
-            if layoutBindings[d] != nil {
-                setNeedsLayout()
+        guard !layingOut else { return }
+        if TRIGGER_LAYOUT_KEYPATHS.contains(keyPath) {
+            setNeedsLayout()
+        }
+        if let deps = dependencies[keyPath] {
+            for d in deps {
+                if let binding = bindings[d] {
+                    let value = binding.expressionValue(with: self, context: nil)
+                    setValue(value, forKey: d)
+                }
+                if layoutBindings[d] != nil {
+                    setNeedsLayout()
+                }
             }
         }
     }

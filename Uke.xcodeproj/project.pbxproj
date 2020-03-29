@@ -29,6 +29,7 @@
 		2FDB58EC2430EE2200D7D730 /* RecipeInstruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FDB58EB2430EE2200D7D730 /* RecipeInstruction.swift */; };
 		2FDB58F024310D9900D7D730 /* NSObject+Instantiate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2FDB58EF24310D9900D7D730 /* NSObject+Instantiate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2FDB58F224310DDA00D7D730 /* NSObject+Instantiate.m in Headers */ = {isa = PBXBuildFile; fileRef = 2FDB58F124310DDA00D7D730 /* NSObject+Instantiate.m */; };
+		2FDB58F42431402000D7D730 /* UIView+LayerProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FDB58F32431402000D7D730 /* UIView+LayerProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +92,7 @@
 		2FDB58EB2430EE2200D7D730 /* RecipeInstruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeInstruction.swift; sourceTree = "<group>"; };
 		2FDB58EF24310D9900D7D730 /* NSObject+Instantiate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+Instantiate.h"; sourceTree = "<group>"; };
 		2FDB58F124310DDA00D7D730 /* NSObject+Instantiate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Instantiate.m"; sourceTree = "<group>"; };
+		2FDB58F32431402000D7D730 /* UIView+LayerProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+LayerProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +122,7 @@
 				2B3F006823C265C0008A520B /* UIView+Layout.swift */,
 				2FDB58EF24310D9900D7D730 /* NSObject+Instantiate.h */,
 				2FDB58F124310DDA00D7D730 /* NSObject+Instantiate.m */,
+				2FDB58F32431402000D7D730 /* UIView+LayerProperties.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -329,6 +332,7 @@
 				2B0E4F2923C6968C00E4E685 /* UkeRecipe.swift in Sources */,
 				2FDB58EC2430EE2200D7D730 /* RecipeInstruction.swift in Sources */,
 				2B174F3E23C7F6AF005A5BB5 /* UkeObjectRecipe.m in Sources */,
+				2FDB58F42431402000D7D730 /* UIView+LayerProperties.swift in Sources */,
 				2B3F006923C265C0008A520B /* UIView+Layout.swift in Sources */,
 				2B8E875D23C33BC300DD4F3B /* UIColor+Literal.swift in Sources */,
 			);

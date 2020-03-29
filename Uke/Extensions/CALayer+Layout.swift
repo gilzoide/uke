@@ -10,24 +10,25 @@ import UIKit
 
 public extension CALayer {
     @objc var width: CGFloat {
-        get { return bounds.width }
+        get { bounds.width }
         set { bounds = CGRect(x: 0, y: 0, width: newValue, height: bounds.height) }
     }
     @objc var height: CGFloat {
-        get { return bounds.height }
+        get { bounds.height }
         set { bounds = CGRect(x: 0, y: 0, width: bounds.width, height: newValue) }
     }
     
     @objc var size: CGSize {
-        get { return bounds.size }
+        get { bounds.size }
         set { bounds = CGRect(x: 0, y: 0, width: newValue.width, height: newValue.height) }
     }
     
-    @objc var minDimension: CGFloat {
-        return min(width, height)
+    @objc var boundsCenter: CGPoint {
+        let bounds = self.bounds
+        return CGPoint(x: bounds.width * 0.5, y: bounds.height * 0.5)
     }
-    @objc var maxDimension: CGFloat {
-        return max(width, height)
-    }
+    
+    @objc var minDimension: CGFloat { min(width, height) }
+    @objc var maxDimension: CGFloat { max(width, height) }
 }
 
