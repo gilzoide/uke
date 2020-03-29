@@ -11,7 +11,7 @@ import Foundation
 public enum RecipeInstruction {
     case defineProperty(name: String, type: Any.Type, initialValue: Any? = nil)
     case setValue(_ value: Any?, keyPath: String)
-    case bindExpression(format: String, name: String, dependencyKeyPaths: [String] = [], runOnLayout: Bool = false)
+    case bindExpression(name: String, format: String, dependencyKeyPaths: [String] = [], runOnLayout: Bool = false)
     case instantiate(AnyClass)
     case addChild(name: String)
 }

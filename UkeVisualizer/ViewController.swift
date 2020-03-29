@@ -10,17 +10,31 @@ import UIKit
 import Uke
 
 class ViewController: UIViewController {
+    @IBOutlet var safeView: UIView!
+    
+    var ukeView: UkeView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let view = try! UkeView(fromRecipe: [
+        ukeView = try! UkeView(fromRecipe: [
             .defineProperty(name: "color", type: UIColor.self),
-            .setValue(0.5, keyPath: "layer.opacity")
+            .setValue(UIColor.label, keyPath: "backgroundColor"),
+            .bindExpression(name: "width", format: "%K", dependencyKeyPaths: ["height"], runOnLayout: true),
+            .setValue(500, keyPath: "height"),
         ])
-        self.view.addSubview(view)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
+        ukeView.addGestureRecognizer(tapGesture)
+        safeView.addSubview(ukeView)
     }
-
-
+    
+    @objc func onTap(_ sender: Any?) {
+        if ukeView.height > 1000 {
+           ukeView.height = 100
+        }
+        else {
+            ukeView.height += 100
+        }
+    }
 }
 
