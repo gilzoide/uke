@@ -140,7 +140,7 @@ public class UkeView : UIView {
             for d in deps {
                 if let binding = bindings[d] {
                     let value = binding.expressionValue(with: self, context: nil)
-                    setValue(value, forKey: d)
+                    setValue(value, forKeyPath: d)
                 }
                 if layoutBindings[d] != nil {
                     setNeedsLayout()
