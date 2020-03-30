@@ -17,7 +17,21 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IWq-0J-HsO" userLabel="SafeView">
                                 <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <subviews>
+                                    <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0sb-jo-gd4">
+                                        <rect key="frame" x="0.0" y="602" width="414" height="216"/>
+                                        <connections>
+                                            <outlet property="dataSource" destination="BYZ-38-t0r" id="Rnc-zE-6Se"/>
+                                            <outlet property="delegate" destination="BYZ-38-t0r" id="yEi-dv-WNl"/>
+                                        </connections>
+                                    </pickerView>
+                                </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="0sb-jo-gd4" secondAttribute="trailing" id="N98-sf-957"/>
+                                    <constraint firstItem="0sb-jo-gd4" firstAttribute="leading" secondItem="IWq-0J-HsO" secondAttribute="leading" id="TWf-zx-upO"/>
+                                    <constraint firstAttribute="bottom" secondItem="0sb-jo-gd4" secondAttribute="bottom" id="UAH-zx-kYR"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>

@@ -9,7 +9,7 @@
 import UIKit
 import Uke
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
     @IBOutlet var safeView: UIView!
     
     var ukeView: UkeView!
@@ -58,6 +58,22 @@ class ViewController: UIViewController {
         else {
             ukeView.setValue(side + 100, forKeyPath: "side")
         }
+    }
+    
+    
+    let COLORS = ["label", "red", "green", "blue", "yellow"]
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return COLORS.count
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return COLORS[row]
+    }
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        let color = UIColor.color(selectorName: COLORS[row])
+        ukeView.setValue(color, forKeyPath: "color")
     }
 }
 
