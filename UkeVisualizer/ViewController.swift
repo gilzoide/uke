@@ -17,7 +17,7 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        ukeView = try! UkeView(fromRecipe: [
+        let recipe = try! UkeRecipe(instructions: [
             .defineProperty(name: "side", type: CGFloat.self, initialValue: 100),
             .defineProperty(name: "color", type: UIColor.self, initialValue: UIColor.green),
             .defineProperty(name: "bgColor", type: UIColor.self, initialValue: UIColor.white),
@@ -25,26 +25,29 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
             .setValue(CGPoint.zero, keyPath: "anchorPoint"),
             .bindExpression(name: "width", format: "%K", dependencyKeyPaths: ["side"], runOnLayout: true),
             .bindExpression(name: "height", format: "%K", dependencyKeyPaths: ["side"], runOnLayout: true),
+            .setValue(CGPoint.zero, keyPath: "origin"),
             
-            .pushView(name: "background"),
-            .bindExpression(name: "backgroundColor", format: "%K", dependencyKeyPaths: ["bgColor"]),
-            .bindExpression(name: "borderColor", format: "%K", dependencyKeyPaths: ["color"]),
-            .setValue(5, keyPath: "borderWidth"),
-            .bindExpression(name: "width", format: "%K", dependencyKeyPaths: ["minDimension"], runOnLayout: true),
-            .bindExpression(name: "height", format: "%K", dependencyKeyPaths: ["background.width"], runOnLayout: true),
-            .bindExpression(name: "center", format: "%K", dependencyKeyPaths: ["boundsCenter"], runOnLayout: true),
-            .bindExpression(name: "cornerRadius", format: "%K * 0.5", dependencyKeyPaths: ["background.width"], runOnLayout: true),
-            .addChild,
+            .pushView(name: "background", recipe: [
+                .bindExpression(name: "backgroundColor", format: "%K", dependencyKeyPaths: ["bgColor"]),
+                .bindExpression(name: "borderColor", format: "%K", dependencyKeyPaths: ["color"]),
+                .setValue(5, keyPath: "borderWidth"),
+                .bindExpression(name: "width", format: "%K", dependencyKeyPaths: ["minDimension"], runOnLayout: true),
+                .bindExpression(name: "height", format: "%K", dependencyKeyPaths: ["background.width"], runOnLayout: true),
+                .bindExpression(name: "center", format: "%K", dependencyKeyPaths: ["boundsCenter"], runOnLayout: true),
+                .bindExpression(name: "cornerRadius", format: "%K * 0.5", dependencyKeyPaths: ["background.width"], runOnLayout: true),
+            ]),
             
-            .pushView(name: "checkImage", UIImageView.self),
-            .bindExpression(name: "width", format: "%K * 0.7", dependencyKeyPaths: ["background.width"], runOnLayout: true),
-            .bindExpression(name: "height", format: "%K * 0.7", dependencyKeyPaths: ["background.height"], runOnLayout: true),
-            .bindExpression(name: "center", format: "%K", dependencyKeyPaths: ["boundsCenter"], runOnLayout: true),
-            .bindExpression(name: "tintColor", format: "%K", dependencyKeyPaths: ["color"]),
-            .setValue(1, keyPath: "contentMode"),
-            .setValue(UIImage(named: "check"), keyPath: "image"),
-            .addChild,
+            .pushView(name: "checkImage", UIImageView.self, recipe: [
+                .bindExpression(name: "width", format: "%K * 0.7", dependencyKeyPaths: ["background.width"], runOnLayout: true),
+                .bindExpression(name: "height", format: "%K * 0.7", dependencyKeyPaths: ["background.height"], runOnLayout: true),
+                .bindExpression(name: "center", format: "%K", dependencyKeyPaths: ["boundsCenter"], runOnLayout: true),
+                .bindExpression(name: "tintColor", format: "%K", dependencyKeyPaths: ["color"]),
+                .setValue(1, keyPath: "contentMode"),
+                .setValue(UIImage(named: "check"), keyPath: "image"),
+            ]),
         ])
+        
+        ukeView = recipe.instance()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
         ukeView.addGestureRecognizer(tapGesture)
         safeView.addSubview(ukeView)

@@ -12,7 +12,6 @@ public enum RecipeInstruction {
     case defineProperty(name: String, type: Any.Type, initialValue: Any? = nil)
     case setValue(_ value: Any?, keyPath: String)
     case bindExpression(name: String, format: String, dependencyKeyPaths: [String] = [], runOnLayout: Bool = false)
-    case pushView(name: String, UIView.Type = UIView.self)
-    case pushLayer(name: String, CALayer.Type = CALayer.self)
-    case addChild
+    case pushView(name: String, UIView.Type = UIView.self, recipe: [RecipeInstruction])
+    case pushLayer(name: String, CALayer.Type = CALayer.self, recipe: [RecipeInstruction])
 }
