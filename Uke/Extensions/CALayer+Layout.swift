@@ -18,9 +18,13 @@ public extension CALayer {
         set { bounds = CGRect(x: 0, y: 0, width: bounds.width, height: newValue) }
     }
     
+    @objc var origin: CGPoint {
+        get { frame.origin }
+        set { frame = CGRect(origin: newValue, size: frame.size) }
+    }
     @objc var size: CGSize {
         get { bounds.size }
-        set { bounds = CGRect(x: 0, y: 0, width: newValue.width, height: newValue.height) }
+        set { bounds = CGRect(origin: bounds.origin, size: newValue) }
     }
     
     @objc var boundsCenter: CGPoint {
