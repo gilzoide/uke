@@ -47,7 +47,7 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
             ]),
         ])
         
-        ukeView = recipe.instance()
+        ukeView = recipe.instantiate()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
         ukeView.addGestureRecognizer(tapGesture)
         safeView.addSubview(ukeView)

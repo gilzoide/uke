@@ -8,18 +8,11 @@
 
 import UIKit
 
-public enum UkeViewError: Error {
-    case propertyAlreadyExists(String)
-    case bindingAlreadyExists(String)
-    case invalidChildType(AnyClass)
-    case invalidAddChild
-}
-
 public class UkeView : UIView {
     var recipe: UkeRecipe!
     var properties: [String: Any?] = [:]
     var children: [String: Any] = [:]
-    var bypassDependencyResolution: Bool = false
+    private var bypassDependencyResolution: Bool = false
     
     private override init(frame: CGRect) {
         super.init(frame: frame)

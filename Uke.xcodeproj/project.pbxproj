@@ -24,7 +24,7 @@
 		2B8E875D23C33BC300DD4F3B /* UIColor+Literal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B8E875C23C33BC300DD4F3B /* UIColor+Literal.swift */; };
 		2F98FF8523DDF6A7001F9986 /* Uke.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3F003B23C25AB4008A520B /* Uke.framework */; };
 		2F98FF8623DDF6A7001F9986 /* Uke.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3F003B23C25AB4008A520B /* Uke.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		2FDB58EC2430EE2200D7D730 /* RecipeInstruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FDB58EB2430EE2200D7D730 /* RecipeInstruction.swift */; };
+		2FDB58EC2430EE2200D7D730 /* UkeRecipeInstruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FDB58EB2430EE2200D7D730 /* UkeRecipeInstruction.swift */; };
 		2FDB58F42431402000D7D730 /* UIView+LayerProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FDB58F32431402000D7D730 /* UIView+LayerProperties.swift */; };
 /* End PBXBuildFile section */
 
@@ -83,7 +83,7 @@
 		2B3F007B23C27124008A520B /* rounded-corner.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "rounded-corner.txt"; sourceTree = "<group>"; };
 		2B805A0F23CFF65000D87E2F /* rounded-corner.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "rounded-corner.lua"; sourceTree = "<group>"; };
 		2B8E875C23C33BC300DD4F3B /* UIColor+Literal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Literal.swift"; sourceTree = "<group>"; };
-		2FDB58EB2430EE2200D7D730 /* RecipeInstruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeInstruction.swift; sourceTree = "<group>"; };
+		2FDB58EB2430EE2200D7D730 /* UkeRecipeInstruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UkeRecipeInstruction.swift; sourceTree = "<group>"; };
 		2FDB58F32431402000D7D730 /* UIView+LayerProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+LayerProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -185,7 +185,7 @@
 			isa = PBXGroup;
 			children = (
 				2B0E4F2823C6968C00E4E685 /* UkeRecipe.swift */,
-				2FDB58EB2430EE2200D7D730 /* RecipeInstruction.swift */,
+				2FDB58EB2430EE2200D7D730 /* UkeRecipeInstruction.swift */,
 			);
 			path = Recipe;
 			sourceTree = "<group>";
@@ -315,7 +315,7 @@
 				2B3F006B23C265D4008A520B /* CALayer+Layout.swift in Sources */,
 				2B3F006223C25EFF008A520B /* UkeView.swift in Sources */,
 				2B0E4F2923C6968C00E4E685 /* UkeRecipe.swift in Sources */,
-				2FDB58EC2430EE2200D7D730 /* RecipeInstruction.swift in Sources */,
+				2FDB58EC2430EE2200D7D730 /* UkeRecipeInstruction.swift in Sources */,
 				2FDB58F42431402000D7D730 /* UIView+LayerProperties.swift in Sources */,
 				2B3F006923C265C0008A520B /* UIView+Layout.swift in Sources */,
 				2B8E875D23C33BC300DD4F3B /* UIColor+Literal.swift in Sources */,

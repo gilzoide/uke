@@ -58,17 +58,17 @@ public class UkeRecipe {
     var layoutBindings: [String] = []
     var children: [String] = []
     
-    public init(instructions: [RecipeInstruction]) throws {
+    public init(instructions: [UkeRecipeInstruction]) throws {
         for instruction in instructions {
             try runInstruction(instruction, currentIdentifier: nil)
         }
     }
     
-    // MARK: View Instances
-    public func instance() -> UkeView {
+    public func instantiate() -> UkeView {
         return UkeView(fromRecipe: self)
     }
     
+    // MARK: View Instances
     func setInitialValues(_ view: UkeView) {
         view.runBypassingDependencyResolution {
             var parentStack: [AnyObject] = [view]
@@ -157,7 +157,7 @@ public class UkeRecipe {
     }
     
     // MARK: Private
-    func runInstruction(_ instruction: RecipeInstruction, currentIdentifier: String?) throws {
+    func runInstruction(_ instruction: UkeRecipeInstruction, currentIdentifier: String?) throws {
         switch instruction {
         case .defineProperty(let name, let type, let initialValue):
             try assureNotBound(name: name)

@@ -1,5 +1,5 @@
 //
-//  Instruction.swift
+//  UkeRecipeInstruction.swift
 //  Uke
 //
 //  Created by Gil Reis on 29/03/20.
@@ -8,10 +8,10 @@
 
 import UIKit
 
-public enum RecipeInstruction {
+public enum UkeRecipeInstruction {
     case defineProperty(name: String, type: Any.Type, initialValue: Any? = nil)
     case setValue(_ value: Any?, keyPath: String)
     case bindExpression(name: String, format: String, dependencyKeyPaths: [String] = [], runOnLayout: Bool = false)
-    case pushView(name: String, UIView.Type = UIView.self, recipe: [RecipeInstruction])
-    case pushLayer(name: String, CALayer.Type = CALayer.self, recipe: [RecipeInstruction])
+    case pushView(name: String, UIView.Type = UIView.self, recipe: [UkeRecipeInstruction])
+    case pushLayer(name: String, CALayer.Type = CALayer.self, recipe: [UkeRecipeInstruction])
 }
