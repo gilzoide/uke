@@ -14,4 +14,6 @@ public enum UkeRecipeInstruction {
     case bindExpression(name: String, format: String, dependencyKeyPaths: [String] = [], runOnLayout: Bool = false)
     case pushView(name: String, UIView.Type = UIView.self, recipe: [UkeRecipeInstruction])
     case pushLayer(name: String, CALayer.Type = CALayer.self, recipe: [UkeRecipeInstruction])
+    
+    case addPose(name: String, bindings: [String: BindingOverride])
 }

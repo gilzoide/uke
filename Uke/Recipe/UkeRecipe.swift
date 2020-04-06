@@ -25,7 +25,8 @@ public enum UkeRecipeError: Error {
     case propertyAlreadyExists(String)
     case bindingAlreadyExists(String)
     case invalidChildType(AnyClass)
-    case invalidPropertyValue(String, expectedType: Any.Type, foundType: Any.Type)
+    case bindingNotFound(String)
+    case invalidBindingOverrideType
 }
 
 enum ChildType {
@@ -40,12 +41,44 @@ enum Binding {
     case immediateExpression(NSExpression)
     case layoutExpression(NSExpression)
     case child(ChildType)
+    
+    func toBindingOverride() -> BindingOverride? {
+        switch self {
+        case .property(_):
+            return nil
+        case .initialValue(let value):
+            return BindingOverride.initialValue(value)
+        case .immediateExpression(let expression):
+            return BindingOverride.immediateExpression(expression)
+        case .layoutExpression(let expression):
+            return BindingOverride.layoutExpression(expression)
+        case .child(_):
+            return nil
+        }
+    }
+}
+
+public enum BindingOverride {
+    case initialValue(Any?)
+    case immediateExpression(NSExpression)
+    case layoutExpression(NSExpression)
+}
+
+class Pose {
+    var name: String
+    var bindingOverrides: [String: BindingOverride]
+    
+    init(name: String, overrides: [String: BindingOverride] = [:]) {
+        self.name = name
+        self.bindingOverrides = overrides
+    }
 }
 
 
 public class UkeRecipe {
     static let POP_CHILD_KEY = "__UkeRecipe.popChild"
     static let LAYOUT_TRIGGER_KEYPATHS: Set = ["frame", "bounds", "size", "height", "width"]
+    static let DEFAULT_POSE_NAME = "default"
     
     var bindings: [String: Binding] = [
         POP_CHILD_KEY: .child(.pop)
@@ -58,7 +91,11 @@ public class UkeRecipe {
     var layoutBindings: [String] = []
     var children: [String] = []
     
+    var defaultPose = Pose(name: DEFAULT_POSE_NAME)
+    var poses: [String: Pose] = [:]
+    
     public init(instructions: [UkeRecipeInstruction]) throws {
+        poses[UkeRecipe.DEFAULT_POSE_NAME] = defaultPose
         for instruction in instructions {
             try runInstruction(instruction, currentIdentifier: nil)
         }
@@ -215,6 +252,30 @@ public class UkeRecipe {
                 try runInstruction(instruction, currentIdentifier: name)
             }
             children.append(UkeRecipe.POP_CHILD_KEY)
+        case .addPose(let name, let overrides):
+            if poses[name] != nil {
+                throw UkeRecipeError.bindingAlreadyExists(name)
+            }
+            for (key, override) in overrides {
+                let binding = bindings[key]?.toBindingOverride()
+                switch (binding, override) {
+                case (nil, .initialValue(_)):
+                    if defaultPose.bindingOverrides[key] == nil {
+                        defaultPose.bindingOverrides[key] = .initialValue(nil)
+                    }
+                case (nil, _):
+                    throw UkeRecipeError.bindingNotFound(key)
+                case (.some(.initialValue(_)), .initialValue(_)),
+                     (.some(.immediateExpression(_)), .immediateExpression(_)),
+                     (.some(.layoutExpression(_)), .layoutExpression(_)):
+                    if defaultPose.bindingOverrides[key] == nil {
+                        defaultPose.bindingOverrides[key] = binding!
+                    }
+                default:
+                    throw UkeRecipeError.invalidBindingOverrideType
+                }
+            }
+            poses[name] = Pose(name: name, overrides: overrides)
         }
     }
     
