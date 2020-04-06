@@ -25,7 +25,23 @@ public class UkeView : UIView {
     public convenience init(fromRecipe recipe: UkeRecipe) {
         self.init(frame: CGRect.zero)
         self.recipe = recipe
-        recipe.setInitialValues(self)
+        recipe.applyInitialValues(self)
+    }
+    
+    public func apply(poseNamed name: String) throws {
+        try recipe.apply(poseNamed: name, toView: self)
+    }
+    
+    public func apply(binding: BindingInstruction, forKeyPath keyPath: String) {
+        switch binding {
+        case .constantValue(let value):
+            setValue(value, forKeyPath: keyPath)
+        case .immediateExpression(let expression):
+            let value = expression.expressionValue(with: self, context: nil)
+            setValue(value, forKeyPath: keyPath)
+        case .layoutExpression(_):
+            setNeedsLayout()
+        }
     }
     
     public override func setValue(_ value: Any?, forKeyPath keyPath: String) {

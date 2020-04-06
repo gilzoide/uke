@@ -27,6 +27,7 @@ public enum UkeRecipeError: Error {
     case invalidChildType(AnyClass)
     case bindingNotFound(String)
     case invalidBindingOverrideType
+    case poseNotFound(String)
 }
 
 enum ChildType {
@@ -42,35 +43,39 @@ enum Binding {
     case layoutExpression(NSExpression)
     case child(ChildType)
     
-    func toBindingOverride() -> BindingOverride? {
+    func toBindingInstruction() -> BindingInstruction? {
         switch self {
         case .property(_):
             return nil
         case .initialValue(let value):
-            return BindingOverride.initialValue(value)
+            return BindingInstruction.constantValue(value)
         case .immediateExpression(let expression):
-            return BindingOverride.immediateExpression(expression)
+            return BindingInstruction.immediateExpression(expression)
         case .layoutExpression(let expression):
-            return BindingOverride.layoutExpression(expression)
+            return BindingInstruction.layoutExpression(expression)
         case .child(_):
             return nil
         }
     }
 }
 
-public enum BindingOverride {
-    case initialValue(Any?)
+public enum BindingInstruction {
+    case constantValue(Any?)
     case immediateExpression(NSExpression)
     case layoutExpression(NSExpression)
 }
 
+public typealias PoseBinding = (keyPath: String, binding: BindingInstruction)
+
 class Pose {
     var name: String
-    var bindingOverrides: [String: BindingOverride]
+    var bindingOverrides: [String: BindingInstruction]
+    var bindingOverrideOrder: [String]
     
-    init(name: String, overrides: [String: BindingOverride] = [:]) {
+    init(name: String, overrides: [PoseBinding] = []) {
         self.name = name
-        self.bindingOverrides = overrides
+        self.bindingOverrideOrder = overrides.map({ $0.0 })
+        self.bindingOverrides = Dictionary(uniqueKeysWithValues: overrides)
     }
 }
 
@@ -92,10 +97,12 @@ public class UkeRecipe {
     var children: [String] = []
     
     var defaultPose = Pose(name: DEFAULT_POSE_NAME)
+    var currentPose: Pose
     var poses: [String: Pose] = [:]
     
     public init(instructions: [UkeRecipeInstruction]) throws {
         poses[UkeRecipe.DEFAULT_POSE_NAME] = defaultPose
+        currentPose = defaultPose
         for instruction in instructions {
             try runInstruction(instruction, currentIdentifier: nil)
         }
@@ -106,7 +113,7 @@ public class UkeRecipe {
     }
     
     // MARK: View Instances
-    func setInitialValues(_ view: UkeView) {
+    func applyInitialValues(_ view: UkeView) {
         view.runBypassingDependencyResolution {
             var parentStack: [AnyObject] = [view]
             for name in children {
@@ -156,20 +163,37 @@ public class UkeRecipe {
         }
     }
     
+    func apply(poseNamed name: String, toView view: UkeView) throws {
+        guard let pose = poses[name] else {
+            throw UkeRecipeError.poseNotFound(name)
+        }
+        apply(pose: pose, toView: view)
+    }
+    
+    func apply(pose: Pose, toView view: UkeView) {
+        guard currentPose !== pose else { return }
+        currentPose = pose
+        for keyPath in pose.bindingOverrideOrder {
+            view.apply(binding: pose.bindingOverrides[keyPath]!, forKeyPath: keyPath)
+        }
+    }
+    
     func resolveDependencies(forTarget target: UkeView, keyPath: String) {
         if UkeRecipe.LAYOUT_TRIGGER_KEYPATHS.contains(keyPath) {
             target.setNeedsLayout()
         }
         if let dependencies = dependencies[keyPath] {
             for d in dependencies {
-                switch bindings[d] {
-                case .immediateExpression(let expression):
-                    let value = expression.expressionValue(with: target, context: nil)
-                    target.setValue(value, forKeyPath: d)
-                case .layoutExpression(_):
-                    target.setNeedsLayout()
-                default:
-                    break
+                if let binding = currentPose.bindingOverrides[d] ?? bindings[d]?.toBindingInstruction() {
+                    switch binding {
+                    case .immediateExpression(let expression):
+                        let value = expression.expressionValue(with: target, context: nil)
+                        target.setValue(value, forKeyPath: d)
+                    case .layoutExpression(_):
+                        target.setNeedsLayout()
+                    default:
+                        break
+                    }
                 }
             }
         }
@@ -257,15 +281,15 @@ public class UkeRecipe {
                 throw UkeRecipeError.bindingAlreadyExists(name)
             }
             for (key, override) in overrides {
-                let binding = bindings[key]?.toBindingOverride()
+                let binding = bindings[key]?.toBindingInstruction()
                 switch (binding, override) {
-                case (nil, .initialValue(_)):
+                case (nil, .constantValue(_)):
                     if defaultPose.bindingOverrides[key] == nil {
-                        defaultPose.bindingOverrides[key] = .initialValue(nil)
+                        defaultPose.bindingOverrides[key] = .constantValue(nil)
                     }
                 case (nil, _):
                     throw UkeRecipeError.bindingNotFound(key)
-                case (.some(.initialValue(_)), .initialValue(_)),
+                case (.some(.constantValue(_)), .constantValue(_)),
                      (.some(.immediateExpression(_)), .immediateExpression(_)),
                      (.some(.layoutExpression(_)), .layoutExpression(_)):
                     if defaultPose.bindingOverrides[key] == nil {

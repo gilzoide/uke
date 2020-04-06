@@ -15,5 +15,5 @@ public enum UkeRecipeInstruction {
     case pushView(name: String, UIView.Type = UIView.self, recipe: [UkeRecipeInstruction])
     case pushLayer(name: String, CALayer.Type = CALayer.self, recipe: [UkeRecipeInstruction])
     
-    case addPose(name: String, bindings: [String: BindingOverride])
+    case addPose(name: String, bindings: [PoseBinding])
 }
