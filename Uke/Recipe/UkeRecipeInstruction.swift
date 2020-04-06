@@ -9,11 +9,11 @@
 import UIKit
 
 public enum UkeRecipeInstruction {
-    case defineProperty(name: String, type: Any.Type, initialValue: Any? = nil)
-    case setValue(_ value: Any?, keyPath: String)
-    case bindExpression(name: String, format: String, dependencyKeyPaths: [String] = [], runOnLayout: Bool = false)
-    case pushView(name: String, UIView.Type = UIView.self, recipe: [UkeRecipeInstruction])
-    case pushLayer(name: String, CALayer.Type = CALayer.self, recipe: [UkeRecipeInstruction])
+    case property(String, type: Any.Type, initialValue: Any? = nil)
+    case constant(_ keyPath: String, _ value: Any?)
+    case expression(String, format: String, dependencyKeyPaths: [String] = [], runOnLayout: Bool = false)
+    case subview(String, UIView.Type = UIView.self, recipe: [UkeRecipeInstruction])
+    case sublayer(String, CALayer.Type = CALayer.self, recipe: [UkeRecipeInstruction])
     
-    case addPose(name: String, bindings: [PoseBinding])
+    case pose(String, bindings: [PoseBinding])
 }

@@ -65,7 +65,7 @@ public enum BindingInstruction {
     case layoutExpression(NSExpression)
 }
 
-public typealias PoseBinding = (keyPath: String, binding: BindingInstruction)
+public typealias PoseBinding = (String, BindingInstruction)
 
 class Pose {
     var name: String
@@ -220,18 +220,18 @@ public class UkeRecipe {
     // MARK: Private
     func runInstruction(_ instruction: UkeRecipeInstruction, currentIdentifier: String?) throws {
         switch instruction {
-        case .defineProperty(let name, let type, let initialValue):
+        case .property(let name, let type, let initialValue):
             try assureNotBound(name: name)
             bindings[name] = .property(Property(name: name, type: type, initialValue: initialValue))
             properties.append(name)
             initialValues.append(name)
-        case .setValue(let value, let keyPath):
+        case .constant(let keyPath, let value):
             let childName = currentIdentifier?.appending(".") ?? ""
             let fullName = "\(childName)\(keyPath)"
             try assureNotBound(name: fullName)
             bindings[fullName] = .initialValue(value)
             initialValues.append(fullName)
-        case .bindExpression(let name, let format, let dependencyKeyPaths, let runOnLayout):
+        case .expression(let name, let format, let dependencyKeyPaths, let runOnLayout):
             let childName = currentIdentifier?.appending(".") ?? ""
             let fullName = "\(childName)\(name)"
             try assureNotBound(name: fullName)
@@ -260,7 +260,7 @@ public class UkeRecipe {
                 bindings[fullName] = .initialValue(value)
                 initialValues.append(fullName)
             }
-        case .pushView(let name, let viewType, let recipe):
+        case .subview(let name, let viewType, let recipe):
             try assureNotBound(name: name)
             bindings[name] = .child(.pushView(viewType))
             children.append(name)
@@ -268,7 +268,7 @@ public class UkeRecipe {
                 try runInstruction(instruction, currentIdentifier: name)
             }
             children.append(UkeRecipe.POP_CHILD_KEY)
-        case .pushLayer(let name, let layerType, let recipe):
+        case .sublayer(let name, let layerType, let recipe):
             try assureNotBound(name: name)
             bindings[name] = .child(.pushLayer(layerType))
             children.append(name)
@@ -276,7 +276,7 @@ public class UkeRecipe {
                 try runInstruction(instruction, currentIdentifier: name)
             }
             children.append(UkeRecipe.POP_CHILD_KEY)
-        case .addPose(let name, let overrides):
+        case .pose(let name, let overrides):
             if poses[name] != nil {
                 throw UkeRecipeError.bindingAlreadyExists(name)
             }

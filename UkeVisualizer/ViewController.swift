@@ -17,42 +17,13 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        let recipe = try! UkeRecipe(instructions: [
-//            .defineProperty(name: "side", type: CGFloat.self, initialValue: 100),
-//            .defineProperty(name: "color", type: UIColor.self, initialValue: UIColor.green),
-//            .defineProperty(name: "bgColor", type: UIColor.self, initialValue: UIColor.white),
-//            .setValue(nil, keyPath: "backgroundColor"),
-//            .setValue(CGPoint.zero, keyPath: "anchorPoint"),
-//            .bindExpression(name: "width", format: "%K", dependencyKeyPaths: ["side"], runOnLayout: true),
-//            .bindExpression(name: "height", format: "%K", dependencyKeyPaths: ["side"], runOnLayout: true),
-//            .setValue(CGPoint.zero, keyPath: "origin"),
-//
-//            .pushView(name: "background", recipe: [
-//                .bindExpression(name: "backgroundColor", format: "%K", dependencyKeyPaths: ["bgColor"]),
-//                .bindExpression(name: "borderColor", format: "%K", dependencyKeyPaths: ["color"]),
-//                .setValue(5, keyPath: "borderWidth"),
-//                .bindExpression(name: "width", format: "%K", dependencyKeyPaths: ["minDimension"], runOnLayout: true),
-//                .bindExpression(name: "height", format: "%K", dependencyKeyPaths: ["background.width"], runOnLayout: true),
-//                .bindExpression(name: "center", format: "%K", dependencyKeyPaths: ["boundsCenter"], runOnLayout: true),
-//                .bindExpression(name: "cornerRadius", format: "%K * 0.5", dependencyKeyPaths: ["background.width"], runOnLayout: true),
-//            ]),
-//
-//            .pushView(name: "checkImage", UIImageView.self, recipe: [
-//                .bindExpression(name: "width", format: "%K * 0.7", dependencyKeyPaths: ["background.width"], runOnLayout: true),
-//                .bindExpression(name: "height", format: "%K * 0.7", dependencyKeyPaths: ["background.height"], runOnLayout: true),
-//                .bindExpression(name: "center", format: "%K", dependencyKeyPaths: ["boundsCenter"], runOnLayout: true),
-//                .bindExpression(name: "tintColor", format: "%K", dependencyKeyPaths: ["color"]),
-//                .setValue(1, keyPath: "contentMode"),
-//                .setValue(UIImage(named: "check"), keyPath: "image"),
-//            ]),
-//        ])
         let recipe = try! UkeRecipe(instructions: [
-            .setValue(UIColor.red, keyPath: "backgroundColor"),
-            .setValue(CGRect(x: 100, y: 100, width: 100, height: 100), keyPath: "frame"),
+            .constant("backgroundColor", UIColor.red),
+            .constant("frame", CGRect(x: 100, y: 100, width: 100, height: 100)),
             
-            .addPose(name: "bigger", bindings: [
-                (keyPath: "frame", binding: .constantValue(CGRect(x: 100, y: 100, width: 200, height: 200))),
-                (keyPath: "backgroundColor", binding: .constantValue(UIColor.green)),
+            .pose("bigger", bindings: [
+                ("frame", .constantValue(CGRect(x: 100, y: 100, width: 200, height: 200))),
+                ("backgroundColor", .constantValue(UIColor.green)),
             ]),
         ])
         
