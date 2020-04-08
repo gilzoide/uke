@@ -44,6 +44,11 @@ public class UkeView : UIView {
         }
     }
     
+    public subscript(_ keyPath: String) -> Any? {
+        get { value(forKeyPath: keyPath) }
+        set { setValue(newValue, forKeyPath: keyPath) }
+    }
+    
     public override func setValue(_ value: Any?, forKeyPath keyPath: String) {
         super.setValue(value, forKeyPath: keyPath)
         resolveDependencies(forKeyPath: keyPath)
