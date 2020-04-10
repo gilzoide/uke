@@ -148,9 +148,9 @@ public class UkeRecipe {
                 if let binding = bindings[name] {
                     switch binding {
                     case RecipeBinding.property(let property):
-                        view.setValue(property.initialValue, forKeyPath: name)
+                        view[name] = property.initialValue
                     case RecipeBinding.initialValue(let value):
-                        view.setValue(value, forKeyPath: name)
+                        view[name] = value
                     default:
                         break
                     }
@@ -158,14 +158,13 @@ public class UkeRecipe {
             }
             for name in copyBindings {
                 if let binding = bindings[name], case RecipeBinding.sameValue(let keyPath) = binding {
-                    let value = view.value(forKeyPath: keyPath)
-                    view.setValue(value, forKeyPath: name)
+                    view[name] = view[keyPath]
                 }
             }
             for name in immediateBindings {
                 if let binding = bindings[name], case RecipeBinding.immediateExpression(let expression) = binding {
                     let value = expression.expressionValue(with: view, context: nil)
-                    view.setValue(value, forKeyPath: name)
+                    view[name] = value
                 }
             }
             if layoutBindings.count > 0 {
@@ -189,22 +188,21 @@ public class UkeRecipe {
         }
     }
     
-    func resolveDependencies(forTarget target: UkeView, keyPath: String) {
+    func resolveDependencies(forTarget view: UkeView, keyPath: String) {
         if UkeRecipe.LAYOUT_TRIGGER_KEYPATHS.contains(keyPath) {
-            target.setNeedsLayout()
+            view.setNeedsLayout()
         }
         if let dependencies = dependencies[keyPath] {
             for d in dependencies {
                 if let binding = currentPose.bindingOverrides[d] ?? bindings[d]?.toBindingInstruction() {
                     switch binding {
                     case .sameValue(_):
-                        let value = target.value(forKeyPath: keyPath)
-                        target.setValue(value, forKeyPath: d)
+                        view[d] = view[keyPath]
                     case .immediateExpression(let expression):
-                        let value = expression.expressionValue(with: target, context: nil)
-                        target.setValue(value, forKeyPath: d)
+                        let value = expression.expressionValue(with: view, context: nil)
+                        view[d] = value
                     case .layoutExpression(_):
-                        target.setNeedsLayout()
+                        view.setNeedsLayout()
                     default:
                         break
                     }

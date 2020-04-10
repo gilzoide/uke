@@ -35,13 +35,12 @@ public class UkeView : UIView {
     public func apply(binding: BindingInstruction, forKeyPath keyPath: String) {
         switch binding {
         case .constantValue(let value):
-            setValue(value, forKeyPath: keyPath)
+            self[keyPath] = value
         case .sameValue(let copyKeyPath):
-            let value = self.value(forKeyPath: copyKeyPath)
-            setValue(value, forKeyPath: keyPath)
+            self[keyPath] = self[copyKeyPath]
         case .immediateExpression(let expression):
             let value = expression.expressionValue(with: self, context: nil)
-            setValue(value, forKeyPath: keyPath)
+            self[keyPath] = value
         case .layoutExpression(_):
             setNeedsLayout()
         }
@@ -82,7 +81,7 @@ public class UkeView : UIView {
         runBypassingDependencyResolution {
             for (keyPath, expression) in recipe.layoutExpressions() {
                 let value = expression.expressionValue(with: self, context: nil)
-                setValue(value, forKeyPath: keyPath)
+                self[keyPath] = value
             }
         }
     }
