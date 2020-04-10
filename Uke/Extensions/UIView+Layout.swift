@@ -18,6 +18,15 @@ public extension UIView {
         set { bounds = CGRect(x: 0, y: 0, width: bounds.width, height: newValue) }
     }
     
+    @objc var aspect: CGFloat {
+        get { width / height }
+        set { height = width / newValue }
+    }
+    @objc var inverseAspect: CGFloat {
+        get { height / width }
+        set { width = height / newValue }
+    }
+    
     @objc var origin: CGPoint {
         get { frame.origin }
         set { frame = CGRect(origin: newValue, size: frame.size) }

@@ -10,9 +10,11 @@ import UIKit
 
 public enum UkeRecipeInstruction {
     case property(String, type: Any.Type, initialValue: Any? = nil)
+    
     case constant(String, _ value: Any?)
-    case sameValue(String, as: String)
+    case sameValue(String, as: String, runOnLayout: Bool = false)
     case expression(String, format: String, dependencyKeyPaths: [String] = [], runOnLayout: Bool = false)
+    
     case subview(String, UIView.Type = UIView.self, recipe: [UkeRecipeInstruction])
     case sublayer(String, CALayer.Type = CALayer.self, recipe: [UkeRecipeInstruction])
     

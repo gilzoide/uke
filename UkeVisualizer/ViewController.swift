@@ -18,8 +18,11 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         super.viewDidLoad()
         
         let recipe = try! UkeRecipe(instructions: [
+            .property("side", type: CGFloat.self, initialValue: 100),
             .property("color", type: UIColor.self, initialValue: UIColor.label),
-            .constant("frame", CGRect(x: 10, y: 10, width: 400, height: 400)),
+            .constant("origin", CGPoint(x: 10, y: 10)),
+            .sameValue("width", as: "side", runOnLayout: true),
+            .expression("aspect", format: "1", dependencyKeyPaths: [], runOnLayout: true),
             .sameValue("backgroundColor", as: "color"),
         ])
         
@@ -33,6 +36,7 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
     @objc func onTap(_ sender: Any?) {
 //        try! ukeView.apply(poseNamed: big ? "default" : "big")
 //        big = !big
+        ukeView["side"] = 300
         
 //        let side = ukeView.value(forKey: "side") as! Int
 //        if side > 800 {

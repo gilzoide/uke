@@ -32,17 +32,23 @@ public class UkeView : UIView {
         try recipe.apply(poseNamed: name, toView: self)
     }
     
-    public func apply(binding: BindingInstruction, forKeyPath keyPath: String) {
+    public func value(forBinding binding: BindingInstruction) -> Any? {
         switch binding {
         case .constantValue(let value):
-            self[keyPath] = value
-        case .sameValue(let copyKeyPath):
-            self[keyPath] = self[copyKeyPath]
-        case .immediateExpression(let expression):
-            let value = expression.expressionValue(with: self, context: nil)
-            self[keyPath] = value
-        case .layoutExpression(_):
+            return value
+        case .sameValue(let keyPath), .layoutSameValue(let keyPath):
+            return self[keyPath]
+        case .immediateExpression(let expression), .layoutExpression(let expression):
+            return expression.expressionValue(with: self, context: nil)
+        }
+    }
+    
+    public func apply(binding: BindingInstruction, forKeyPath keyPath: String) {
+        if case .layoutExpression(_) = binding  {
             setNeedsLayout()
+        }
+        else {
+            self[keyPath] = self.value(forBinding: binding)
         }
     }
     
@@ -79,9 +85,8 @@ public class UkeView : UIView {
     public override func layoutSubviews() {
         super.layoutSubviews()
         runBypassingDependencyResolution {
-            for (keyPath, expression) in recipe.layoutExpressions() {
-                let value = expression.expressionValue(with: self, context: nil)
-                self[keyPath] = value
+            for (keyPath, binding) in recipe.layoutBindingInstructions() {
+                self[keyPath] = self.value(forBinding: binding)
             }
         }
     }
