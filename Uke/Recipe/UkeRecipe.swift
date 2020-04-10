@@ -38,7 +38,8 @@ enum ChildType {
 
 enum RecipeBinding {
     case property(Property)
-    case initialValue(Any?)
+    case constantValue(Any?)
+    case layoutConstantValue(Any?)
     case sameValue(as: String)
     case layoutSameValue(as: String)
     case immediateExpression(NSExpression)
@@ -49,8 +50,10 @@ enum RecipeBinding {
         switch self {
         case .property(_):
             return nil
-        case .initialValue(let value):
+        case .constantValue(let value):
             return BindingInstruction.constantValue(value)
+        case .layoutConstantValue(let value):
+            return BindingInstruction.layoutConstantValue(value)
         case .sameValue(let keyPath):
             return BindingInstruction.sameValue(as: keyPath)
         case .layoutSameValue(let keyPath):
@@ -67,6 +70,7 @@ enum RecipeBinding {
 
 public enum BindingInstruction {
     case constantValue(Any?)
+    case layoutConstantValue(Any?)
     case sameValue(as: String)
     case layoutSameValue(as: String)
     case immediateExpression(NSExpression)
@@ -152,7 +156,7 @@ public class UkeRecipe {
                     switch binding {
                     case RecipeBinding.property(let property):
                         view[name] = property.initialValue
-                    case RecipeBinding.initialValue(let value):
+                    case RecipeBinding.constantValue(let value):
                         view[name] = value
                     default:
                         break
@@ -202,7 +206,7 @@ public class UkeRecipe {
         return layoutBindings.compactMap { (name) -> (String, BindingInstruction)? in
             if let binding = bindings[name]?.toBindingInstruction() {
                 switch binding {
-                case .layoutSameValue(_), .layoutExpression(_):
+                case .layoutConstantValue(_), .layoutSameValue(_), .layoutExpression(_):
                     return (name, binding)
                 default:
                     break
@@ -231,11 +235,17 @@ public class UkeRecipe {
             bindings[name] = .property(Property(name: name, type: type, initialValue: initialValue))
             properties.append(name)
             initialValues.append(name)
-        case .constant(let keyPath, let value):
+        case .constant(let keyPath, let value, let runOnLayout):
             let fullName = "\(childName)\(keyPath)"
             try assureNotBound(name: fullName)
-            bindings[fullName] = .initialValue(value)
-            initialValues.append(fullName)
+            if runOnLayout {
+                bindings[fullName] = .layoutConstantValue(value)
+                layoutBindings.append(fullName)
+            }
+            else {
+                bindings[fullName] = .constantValue(value)
+                initialValues.append(fullName)
+            }
         case .sameValue(let name, let dependencyKeyPath, let runOnLayout):
             let fullName = "\(childName)\(name)"
             try assureNotBound(name: fullName)

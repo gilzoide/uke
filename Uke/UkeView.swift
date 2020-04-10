@@ -34,7 +34,7 @@ public class UkeView : UIView {
     
     public func value(forBinding binding: BindingInstruction) -> Any? {
         switch binding {
-        case .constantValue(let value):
+        case .constantValue(let value), .layoutConstantValue(let value):
             return value
         case .sameValue(let keyPath), .layoutSameValue(let keyPath):
             return self[keyPath]

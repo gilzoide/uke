@@ -22,7 +22,7 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
             .property("color", type: UIColor.self, initialValue: UIColor.label),
             .constant("origin", CGPoint(x: 10, y: 10)),
             .sameValue("width", as: "side", runOnLayout: true),
-            .expression("aspect", format: "1", dependencyKeyPaths: [], runOnLayout: true),
+            .constant("aspect", 1, runOnLayout: true),
             .sameValue("backgroundColor", as: "color"),
         ])
         

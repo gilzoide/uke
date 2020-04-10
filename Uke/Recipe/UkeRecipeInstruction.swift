@@ -11,7 +11,7 @@ import UIKit
 public enum UkeRecipeInstruction {
     case property(String, type: Any.Type, initialValue: Any? = nil)
     
-    case constant(String, _ value: Any?)
+    case constant(String, _ value: Any?, runOnLayout: Bool = false)
     case sameValue(String, as: String, runOnLayout: Bool = false)
     case expression(String, format: String, dependencyKeyPaths: [String] = [], runOnLayout: Bool = false)
     
