@@ -36,9 +36,10 @@ enum ChildType {
     case pop
 }
 
-enum Binding {
+enum RecipeBinding {
     case property(Property)
     case initialValue(Any?)
+    case sameValue(as: String)
     case immediateExpression(NSExpression)
     case layoutExpression(NSExpression)
     case child(ChildType)
@@ -49,6 +50,8 @@ enum Binding {
             return nil
         case .initialValue(let value):
             return BindingInstruction.constantValue(value)
+        case .sameValue(let keyPath):
+            return BindingInstruction.sameValue(as: keyPath)
         case .immediateExpression(let expression):
             return BindingInstruction.immediateExpression(expression)
         case .layoutExpression(let expression):
@@ -61,6 +64,7 @@ enum Binding {
 
 public enum BindingInstruction {
     case constantValue(Any?)
+    case sameValue(as: String)
     case immediateExpression(NSExpression)
     case layoutExpression(NSExpression)
 }
@@ -85,13 +89,14 @@ public class UkeRecipe {
     static let LAYOUT_TRIGGER_KEYPATHS: Set = ["frame", "bounds", "size", "height", "width"]
     static let DEFAULT_POSE_NAME = "default"
     
-    var bindings: [String: Binding] = [
+    var bindings: [String: RecipeBinding] = [
         POP_CHILD_KEY: .child(.pop)
     ]
     
     var properties: [String] = []
     var initialValues: [String] = []
     var dependencies: [String: [String]] = [:]
+    var copyBindings: [String] = []
     var immediateBindings: [String] = []
     var layoutBindings: [String] = []
     var children: [String] = []
@@ -117,7 +122,7 @@ public class UkeRecipe {
         view.runBypassingDependencyResolution {
             var parentStack: [AnyObject] = [view]
             for name in children {
-                if let binding = bindings[name], case Binding.child(let childOperation) = binding {
+                if let binding = bindings[name], case RecipeBinding.child(let childOperation) = binding {
                     switch childOperation {
                     case .pushView(let viewType):
                         if let parent = parentStack.last as? UIView {
@@ -142,17 +147,23 @@ public class UkeRecipe {
             for name in initialValues {
                 if let binding = bindings[name] {
                     switch binding {
-                    case Binding.property(let property):
+                    case RecipeBinding.property(let property):
                         view.setValue(property.initialValue, forKeyPath: name)
-                    case Binding.initialValue(let value):
+                    case RecipeBinding.initialValue(let value):
                         view.setValue(value, forKeyPath: name)
                     default:
                         break
                     }
                 }
             }
+            for name in copyBindings {
+                if let binding = bindings[name], case RecipeBinding.sameValue(let keyPath) = binding {
+                    let value = view.value(forKeyPath: keyPath)
+                    view.setValue(value, forKeyPath: name)
+                }
+            }
             for name in immediateBindings {
-                if let binding = bindings[name], case Binding.immediateExpression(let expression) = binding {
+                if let binding = bindings[name], case RecipeBinding.immediateExpression(let expression) = binding {
                     let value = expression.expressionValue(with: view, context: nil)
                     view.setValue(value, forKeyPath: name)
                 }
@@ -186,6 +197,9 @@ public class UkeRecipe {
             for d in dependencies {
                 if let binding = currentPose.bindingOverrides[d] ?? bindings[d]?.toBindingInstruction() {
                     switch binding {
+                    case .sameValue(_):
+                        let value = target.value(forKeyPath: keyPath)
+                        target.setValue(value, forKeyPath: d)
                     case .immediateExpression(let expression):
                         let value = expression.expressionValue(with: target, context: nil)
                         target.setValue(value, forKeyPath: d)
@@ -201,7 +215,7 @@ public class UkeRecipe {
     
     func layoutExpressions() -> [(String, NSExpression)] {
         return layoutBindings.map { (name) -> (String, NSExpression) in
-            if case let Binding.layoutExpression(expression) = bindings[name]! {
+            if case let RecipeBinding.layoutExpression(expression) = bindings[name]! {
                 return (name, expression)
             }
             return (name, NSExpression())
@@ -209,7 +223,7 @@ public class UkeRecipe {
     }
     
     func isValid(property name: String, value: Any?) -> Bool {
-        if let binding = bindings[name], case Binding.property(_) = binding {
+        if let binding = bindings[name], case RecipeBinding.property(_) = binding {
             return true
         }
         else {
@@ -231,6 +245,13 @@ public class UkeRecipe {
             try assureNotBound(name: fullName)
             bindings[fullName] = .initialValue(value)
             initialValues.append(fullName)
+        case .sameValue(let name, let dependencyKeyPath):
+            let childName = currentIdentifier?.appending(".") ?? ""
+            let fullName = "\(childName)\(name)"
+            try assureNotBound(name: fullName)
+            bindings[fullName] = .sameValue(as: dependencyKeyPath)
+            addDependency(fullName, forKeyPath: dependencyKeyPath)
+            copyBindings.append(fullName)
         case .expression(let name, let format, let dependencyKeyPaths, let runOnLayout):
             let childName = currentIdentifier?.appending(".") ?? ""
             let fullName = "\(childName)\(name)"
@@ -242,9 +263,7 @@ public class UkeRecipe {
                     if runOnLayout && UkeRecipe.LAYOUT_TRIGGER_KEYPATHS.contains(keyPath) {
                         continue
                     }
-                    var deps = dependencies[keyPath, default: []]
-                    deps.append(fullName)
-                    dependencies.updateValue(deps, forKey: keyPath)
+                    addDependency(fullName, forKeyPath: keyPath)
                 }
                 if runOnLayout {
                     bindings[fullName] = .layoutExpression(expression)
@@ -301,6 +320,12 @@ public class UkeRecipe {
             }
             poses[name] = Pose(name: name, overrides: overrides)
         }
+    }
+    
+    func addDependency(_ name: String, forKeyPath keyPath: String) {
+        var deps = dependencies[keyPath, default: []]
+        deps.append(name)
+        dependencies.updateValue(deps, forKey: keyPath)
     }
     
     func assureNotBound(name: String) throws {

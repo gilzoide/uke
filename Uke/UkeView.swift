@@ -36,6 +36,9 @@ public class UkeView : UIView {
         switch binding {
         case .constantValue(let value):
             setValue(value, forKeyPath: keyPath)
+        case .sameValue(let copyKeyPath):
+            let value = self.value(forKeyPath: copyKeyPath)
+            setValue(value, forKeyPath: keyPath)
         case .immediateExpression(let expression):
             let value = expression.expressionValue(with: self, context: nil)
             setValue(value, forKeyPath: keyPath)
