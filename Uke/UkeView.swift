@@ -44,10 +44,10 @@ public class UkeView : UIView {
     }
     
     public func apply(binding: BindingInstruction, forKeyPath keyPath: String) {
-        if case .layoutExpression(_) = binding  {
+        switch binding {
+        case .layoutConstantValue(_), .layoutSameValue(_), .layoutExpression(_):
             setNeedsLayout()
-        }
-        else {
+        default:
             self[keyPath] = self.value(forBinding: binding)
         }
     }

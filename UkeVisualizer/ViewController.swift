@@ -22,21 +22,27 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
             .property("color", type: UIColor.self, initialValue: UIColor.label),
             .constant("origin", CGPoint(x: 10, y: 10)),
             .sameValue("width", as: "side", runOnLayout: true),
-            .constant("aspect", 1, runOnLayout: true),
             .sameValue("backgroundColor", as: "color"),
+            
+            .pose("small", bindings: [
+                ("aspect", .layoutConstantValue(1)),
+            ]),
+            .pose("big", bindings: [
+                ("inverseAspect", .layoutConstantValue(0.5)),
+            ])
         ])
         
         ukeView = recipe.instantiate()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
         ukeView.addGestureRecognizer(tapGesture)
+        try! ukeView.apply(poseNamed: "small")
         safeView.addSubview(ukeView)
     }
     
     var big = false
     @objc func onTap(_ sender: Any?) {
-//        try! ukeView.apply(poseNamed: big ? "default" : "big")
-//        big = !big
-        ukeView["side"] = 300
+        try! ukeView.apply(poseNamed: big ? "small" : "big")
+        big = !big
         
 //        let side = ukeView.value(forKey: "side") as! Int
 //        if side > 800 {

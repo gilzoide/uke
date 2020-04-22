@@ -204,7 +204,7 @@ public class UkeRecipe {
     
     func layoutBindingInstructions() -> [(String, BindingInstruction)] {
         return layoutBindings.compactMap { (name) -> (String, BindingInstruction)? in
-            if let binding = bindings[name]?.toBindingInstruction() {
+            if let binding = currentPose.bindingOverrides[name] ?? bindings[name]?.toBindingInstruction() {
                 switch binding {
                 case .layoutConstantValue(_), .layoutSameValue(_), .layoutExpression(_):
                     return (name, binding)
@@ -301,13 +301,17 @@ public class UkeRecipe {
             for (key, override) in overrides {
                 let binding = bindings[key]?.toBindingInstruction()
                 switch (binding, override) {
-                case (nil, .constantValue(_)):
+                case (nil, .constantValue(_)),
+                     (nil, .layoutConstantValue(_)):
                     if defaultPose.bindingOverrides[key] == nil {
                         defaultPose.bindingOverrides[key] = .constantValue(nil)
                     }
                 case (nil, _):
                     throw UkeRecipeError.bindingNotFound(key)
                 case (.some(.constantValue(_)), .constantValue(_)),
+                     (.some(.layoutConstantValue(_)), .layoutConstantValue(_)),
+                     (.some(.sameValue(_)), .sameValue(_)),
+                     (.some(.layoutSameValue(_)), .layoutSameValue(_)),
                      (.some(.immediateExpression(_)), .immediateExpression(_)),
                      (.some(.layoutExpression(_)), .layoutExpression(_)):
                     if defaultPose.bindingOverrides[key] == nil {
